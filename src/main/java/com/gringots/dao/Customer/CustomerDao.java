@@ -1,4 +1,4 @@
-package com.gringots.dao;
+package com.gringots.dao.Customer;
 
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;

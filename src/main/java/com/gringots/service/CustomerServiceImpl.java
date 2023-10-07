@@ -1,6 +1,7 @@
 package com.gringots.service;
 
-import com.gringots.dao.CustomerDao;
+import com.gringots.dao.Customer.CustomerDao;
+import com.gringots.dao.Customer.IndividualDao;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +9,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Locale;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
 
     @Autowired
     CustomerDao customerDao;
+    @Autowired
+    IndividualDao individualDao;
     //
 
     @Override
@@ -37,8 +39,8 @@ public class CustomerServiceImpl implements CustomerService{
 
 
         customerCreatedResponse = customerDao.createCustomer(customerType, address, phoneNumber, nicImage, email);
-
-
+        CommonResponseDto individualCreatedResponse =
+                individualDao.createIndividual(customerCreatedResponse.getGeneratedKey(),firstName,lastName,nic,dob);
         //Assuming that customer email & customer Type is checked for null though the front-end
 
 /*        //Creating customer record
