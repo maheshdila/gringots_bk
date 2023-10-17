@@ -224,3 +224,65 @@ BEGIN
 END//
 DELIMITER ;
 
+/*-------------------------------------------------------------------------------------*/
+DELIMITER //
+
+CREATE PROCEDURE transfer_funds(
+    IN p_sender_account_id BIGINT,
+    IN p_receiver_account_id BIGINT,
+    IN p_amount DECIMAL(20, 2),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare variables to store an error flag , current balances and date/time
+    DECLARE error_flag INT DEFAULT 0;
+    DECLARE sender_balance DECIMAL(20, 2);
+    DECLARE receiver_balance DECIMAL(20, 2);
+    DECLARE cur_date DATE;
+    DECLARE cur_time TIME;
+
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Get the current balances of the sender and receiver accounts
+    SELECT balance INTO sender_balance FROM account WHERE account_no = p_sender_account_id;
+    SELECT balance INTO receiver_balance FROM account WHERE account_no = p_receiver_account_id;
+
+    -- Check if the sender has enough balance for the transaction
+    IF sender_balance >= p_amount THEN
+        -- Update the sender's balance
+        UPDATE account SET balance = sender_balance - p_amount WHERE account_no = p_sender_account_id;
+
+
+        -- Update the receiver's balance
+        UPDATE account SET balance = receiver_balance + p_amount WHERE account_no = p_receiver_account_id;
+        SELECT CURDATE() INTO cur_date;
+        SELECT CURTIME() INTO cur_time;
+
+        -- log the transaction
+        INSERT INTO transaction (sender_account_id, receiver_account_id, amount, date, time )
+        VALUES (p_sender_account_id, p_receiver_account_id, p_amount,cur_date,cur_time);
+
+        -- Commit the transaction
+        COMMIT;
+        SET p_status = 0;  -- Success
+    ELSE
+        -- Rollback the transaction
+        ROLLBACK;
+        SET p_status = 1;  -- Insufficient balance
+    END IF;
+
+    -- Re-enable auto-commit
+    SET autocommit = 1;
+END//
+
+DELIMITER ;
+
+
