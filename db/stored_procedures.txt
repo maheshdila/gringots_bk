@@ -1,3 +1,4 @@
+/*-----------------------Inserting a customer------------------------------*/
 DELIMITER //
 CREATE PROCEDURE insert_customer(
     IN p_customer_type ENUM('individual', 'organization'),
@@ -53,6 +54,104 @@ BEGIN
     -- Insert customer credentials into the 'customer_credentials' table
     INSERT INTO customer_credentials (email, pw_hash)
     VALUES (p_email, p_pw_hash);
+
+    -- Check if there was an error
+    IF error_flag = 1 THEN
+        -- An error occurred, so rollback the transaction
+        ROLLBACK;
+        SET p_out_status =1;
+    ELSE
+        -- No error occurred, so commit the transaction
+        COMMIT;
+        SET p_out_status =0;
+    END IF;
+
+    -- Enable auto-commit
+    SET autocommit = 1;
+
+    -- Set the generated customer ID in the output parameter
+    /*SET p_generated_id = customer_id;*/
+
+END;
+//
+DELIMITER ;
+
+
+/*-----------------------Inserting a branch ------------------------------*/
+
+DELIMITER //
+CREATE PROCEDURE insert_branch(
+    IN p_branch_name VARCHAR(15),
+    IN p_address VARCHAR(150),
+    IN p_telephone INT,
+    IN p_manager VARCHAR(10),
+    IN p_opening_hours VARCHAR(15),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Insert data into the 'branch' table
+    INSERT INTO branch (branch_name, address, telephone, manager, opening_hours)
+    VALUES (p_branch_name, p_address, p_telephone, p_manager, p_opening_hours);
+
+    -- Check for errors
+    IF error_flag = 1 THEN
+        SET p_status = 1;
+    ELSE
+        SET p_status = 0;
+    END IF;
+END//
+DELIMITER ;
+
+
+/*----------------------Inserting an employee-------------------------------*/
+
+DELIMITER //
+CREATE PROCEDURE insert_employee(
+    IN p_branch_id BIGINT,
+    IN p_first_name VARCHAR(15),
+    IN p_last_name VARCHAR(15),
+    IN p_nic VARCHAR(12),
+    IN p_date_of_birth DATE,
+    IN p_address VARCHAR(70),
+    IN p_employee_type ENUM('manager', 'ordinary'),
+    IN p_pw_hash VARCHAR(255),
+     -- New parameter for password hash
+    OUT p_out_status INT
+)
+
+BEGIN
+
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Declare a variable to store the employee ID
+    DECLARE employee_id BIGINT;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Insert customer information into the 'customer' table
+    INSERT INTO employee (branch_id, first_name, last_name, nic, date_of_birth, address, employee_type)
+    VALUES (p_branch_id, p_first_name,p_last_name, p_nic, p_date_of_birth, p_address, p_employee_type);   /*p_nic_image,nic_image removed*/
+
+    -- Get the last auto-generated customer ID from the previous INSERT operation
+    SET employee_id = LAST_INSERT_ID();
+
+    -- Insert customer credentials into the 'customer_credentials' table
+    INSERT INTO employee_credentials (nic, pw_hash)
+    VALUES (p_nic, p_pw_hash);
 
     -- Check if there was an error
     IF error_flag = 1 THEN
