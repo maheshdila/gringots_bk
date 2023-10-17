@@ -41,3 +41,37 @@ CREATE TABLE IF NOT EXISTS `customer_credentials` (
   FOREIGN KEY (`email`) REFERENCES customer(`email`)
 );
 
+
+CREATE TABLE `Branch` (
+  `branch_id` BIGINT AUTO_INCREMENT,
+  `branch_name` varchar(15),
+  `address` varchar(150),
+  `telephone` int,
+  `manager` varchar(10),
+  `opening_hours` varchar(15),
+  PRIMARY KEY (`branch_id`)
+);
+
+CREATE TABLE `Employee` (
+  `employee_id` BIGINT AUTO_INCREMENT,
+  `branch_id` BIGINT,
+  `first_name` varchar(15),
+  `last_name` varchar(15),
+  `nic` varchar(12) UNIQUE NOT NULL,
+  `date_of_birth` date,
+  `address` varchar(70),
+  `employee_type` enum('manager','ordinary') NOT NULL ,
+  PRIMARY KEY (`employee_id`),
+  FOREIGN KEY (`branch_id`) REFERENCES `Branch`(`branch_id`)
+);
+
+CREATE INDEX idx_nic ON employee(nic);
+
+
+CREATE TABLE IF NOT EXISTS `employee_credentials` (
+  `nic` VARCHAR(13),
+  `pw_hash` VARCHAR(255),
+  PRIMARY KEY (`nic`),
+  FOREIGN KEY (`nic`) REFERENCES employee(`nic`)
+);
+
