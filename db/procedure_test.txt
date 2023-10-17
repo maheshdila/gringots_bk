@@ -19,5 +19,20 @@ CALL insert_customer(
 SELECT @out_status; -- Retrieve the output status
 //
 DELIMITER ;
-/*-----------------------------------------------------*/
 
+
+/*-----------------------------------------------------*/
+DELIMITER //
+SET @out_status = 0; -- Initialize the output variable
+
+CALL insert_account(
+    '1',
+    '1',
+    562.00,
+    'checking',
+    'children',
+    @out_status
+    );
+SELECT @out_status;//
+DELIMITER ;
+/*-----------------------------------------------------*/
