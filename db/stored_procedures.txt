@@ -173,3 +173,54 @@ BEGIN
 END;
 //
 DELIMITER ;
+
+/*-----------------------insert_account------------------------------*/
+
+DELIMITER //
+CREATE PROCEDURE insert_account(
+    IN p_customer_id BIGINT,
+    IN p_branch_id BIGINT,
+    IN p_balance DECIMAL(20,2),
+    IN p_account_type ENUM('saving','checking'),
+    IN p_s_acc_type ENUM('children', 'teen', 'adult', 'senior'),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Declare a variable to store the customer ID
+    DECLARE account_id BIGINT;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    INSERT INTO account (customer_id, branch_id, account_type, balance )
+        VALUES(p_customer_id,p_branch_id,p_account_type,p_balance);
+    SET account_id = LAST_INSERT_ID();
+
+    IF p_account_type='saving' THEN
+    INSERT INTO Saving_account(saving_acc_no, s_account_type, num_of_withdrawals)
+        VALUES(account_id,p_s_acc_type,0);
+    ELSE
+        IF p_account_type='checking' THEN
+            INSERT INTO Checking_account(checking_account_no)
+                VALUES (account_id);
+        END IF;
+    END IF;
+    -- Check for errors
+    IF error_flag = 1 THEN
+        SET p_status = 1;
+    ELSE
+        SET p_status = 0;
+    END IF;
+
+END//
+DELIMITER ;
+
