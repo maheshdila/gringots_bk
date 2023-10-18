@@ -115,4 +115,35 @@ CREATE TABLE `Saving_account` (
 );
 
 
+CREATE TABLE `Transaction` (
+  `transaction_id` BIGINT AUTO_INCREMENT,
+  `sender_account_id` BIGINT,
+  `receiver_account_id` BIGINT,
+  `amount` NUMERIC(20,2) NOT NULL,
+  `date` date,
+  `time` time,
+  PRIMARY KEY (`transaction_id`),
+  FOREIGN KEY(`sender_account_id`) REFERENCES account(account_no),
+  FOREIGN KEY(`receiver_account_id`) REFERENCES account(account_no)
+);
+
+CREATE TABLE `Deposit` (
+  `Deposit_id` BIGINT AUTO_INCREMENT,
+  `Account_id` BIGINT,
+  `Date` date NOT NULL,
+  `Time` time NOT NULL,
+  `Amount` NUMERIC(20,2) NOT NULL ,
+  PRIMARY KEY (`Deposit_id`),
+  FOREIGN KEY (`Account_id`) REFERENCES account(account_no)
+);
+
+CREATE TABLE `Withdrawal` (
+  `withdrawal_id` BIGINT AUTO_INCREMENT,
+  `account_id` BIGINT,
+  `date` date,
+  `time` time,
+  `amount` NUMERIC(20,2),
+  PRIMARY KEY (`withdrawal_id`),
+  FOREIGN KEY (`Account_id`) REFERENCES account(account_no)
+);
 
