@@ -289,4 +289,53 @@ END//
 
 DELIMITER ;
 
+/*----------------------------------------------------------------------*/
+
+DELIMITER //
+
+CREATE PROCEDURE cash_deposit(
+    IN p_account_id BIGINT,
+    IN p_deposit_amount DECIMAL(20, 2),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare variables to store an error flag and current balance / DATE AND TIME
+    DECLARE error_flag INT DEFAULT 0;
+    DECLARE current_balance DECIMAL(20, 2);
+    DECLARE cur_date DATE;
+    DECLARE cur_time TIME;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Get the current balance of the account
+    SELECT balance INTO current_balance FROM account WHERE account_no = p_account_id;
+
+    -- Update the account balance and log the deposit
+    SELECT CURDATE() INTO cur_date;
+    SELECT CURTIME() INTO cur_time;
+
+    UPDATE account SET balance = current_balance + p_deposit_amount WHERE account_no = p_account_id;
+    INSERT INTO deposit (account_id, Date, Time, amount) VALUES (p_account_id,cur_date, cur_time, p_deposit_amount);
+
+    -- Commit the transaction
+    IF error_flag=1 THEN
+        ROLLBACK;
+        SET p_status = 1;
+    ELSE
+        COMMIT;
+        SET p_status = 0;  -- Success
+    end if;
+    -- Re-enable auto-commit
+    SET autocommit = 1;
+END//
+
+DELIMITER ;
+
 
