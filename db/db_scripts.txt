@@ -147,3 +147,22 @@ CREATE TABLE `Withdrawal` (
   FOREIGN KEY (`Account_id`) REFERENCES account(account_no)
 );
 
+CREATE TABLE `loan_info` (
+  `loan_id` BIGINT,
+  `customer_id` BIGINT,
+  `branch_id` BIGINT,
+  `saving_account` BIGINT,
+  `loan_type` enum('online','physical'),
+  `settlement_period` INT,--
+  `amount` NUMERIC(15,2),
+  `approval_status` enum('approved','disapproved','pending'),
+  `approved_date` DATE,
+  `completed_installments` INT,
+  `late_installments` INT,
+  `total_installments` INT,
+  PRIMARY KEY (`loan_id`),
+  FOREIGN KEY (`saving_account`) REFERENCES `Saving_account`(`saving_acc_no`),
+  FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`)
+);
+
+
