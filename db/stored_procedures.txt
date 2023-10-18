@@ -175,7 +175,6 @@ END;
 DELIMITER ;
 
 /*-----------------------insert_account------------------------------*/
-
 DELIMITER //
 CREATE PROCEDURE insert_account(
     IN p_customer_id BIGINT,
@@ -214,15 +213,20 @@ BEGIN
                 VALUES (account_id);
         END IF;
     END IF;
+
     -- Check for errors
     IF error_flag = 1 THEN
+        ROLLBACK;
         SET p_status = 1;
     ELSE
+        COMMIT;
         SET p_status = 0;
     END IF;
 
+
 END//
 DELIMITER ;
+
 
 /*-------------------------------------------------------------------------------------*/
 DELIMITER //
