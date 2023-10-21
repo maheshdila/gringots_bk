@@ -16,7 +16,7 @@ public class IndividualDaoImpl implements IndividualDao {
     @Autowired
     DataSource dataSource;
     @Override
-    public CommonResponseDto createIndividual(long id, String firstName, String lastName, String nic, String dob) throws SQLException {
+    public CommonResponseDto createIndividual(long id, String firstName, String lastName, String nic, String dob) throws SQLException  {
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         Connection connection =dataSource.getConnection();
 
@@ -30,6 +30,7 @@ public class IndividualDaoImpl implements IndividualDao {
         preparedStatement.setDate(5, Date.valueOf(dob));
 
         preparedStatement.executeUpdate();
+        
 
         return null;
     }

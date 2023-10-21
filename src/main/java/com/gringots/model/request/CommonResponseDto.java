@@ -9,5 +9,6 @@ import lombok.Setter;
 public class CommonResponseDto {
 
     boolean isQuerySuccesful;
-    int generatedKey;
+    private String responseCode;
+    private Object responseObject;
 }
