@@ -1,0 +1,38 @@
+/*-----------------------------------------------------*/
+DELIMITER //
+SET @out_status = 0; -- Initialize the output variable
+
+CALL insert_customer(
+    'individual',   -- p_customer_type
+    '123 Main St',  -- p_address
+    '555-123-4567', -- p_phone_number
+    'kinhndoe@example.com', -- p_email
+    'akindu',         -- p_first_name
+    'Doe',          -- p_last_name
+    '1234567890013', -- p_nic
+    '2000-01-01',   -- p_dob
+    'hashed_password', -- p_pw_hash
+    'dila_company',           -- p_name (for organization, pass NULL)
+    '1234',           -- p_org_reg_no (for organization, pass NULL)
+    @out_status     -- p_out_status (output variable)
+);
+SELECT @out_status; -- Retrieve the output status
+//
+DELIMITER ;
+
+
+/*-----------------------------------------------------*/
+DELIMITER //
+SET @out_status = 0; -- Initialize the output variable
+
+CALL insert_account(
+    '1',
+    '1',
+    562.00,
+    'checking',
+    'children',
+    @out_status
+    );
+SELECT @out_status;//
+DELIMITER ;
+/*-----------------------------------------------------*/

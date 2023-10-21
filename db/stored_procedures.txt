@@ -1,0 +1,407 @@
+/*-----------------------Inserting a customer------------------------------*/
+DELIMITER //
+CREATE PROCEDURE insert_customer(
+    IN p_customer_type ENUM('individual', 'organization'),
+    IN p_address VARCHAR(150),
+    IN p_phone_number VARCHAR(15),
+    IN p_email VARCHAR(45),
+    IN p_first_name VARCHAR(15),
+    IN p_last_name VARCHAR(15),
+    IN p_nic VARCHAR(13),
+    IN p_dob DATE,
+    IN p_pw_hash VARCHAR(255),
+    IN p_name VARCHAR(15),
+    IN p_org_reg_no VARCHAR(15),
+     -- New parameter for password hash
+    OUT p_out_status INT
+)
+BEGIN
+
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Declare a variable to store the customer ID
+    DECLARE customer_id BIGINT;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Insert customer information into the 'customer' table
+    INSERT INTO customer (customer_type, address, phone_number,  email)
+    VALUES (p_customer_type, p_address, p_phone_number,  p_email);   /*p_nic_image,nic_image removed*/
+
+    -- Get the last auto-generated customer ID from the previous INSERT operation
+    SET customer_id = LAST_INSERT_ID();
+
+    -- Insert individual-specific information into the 'individual' table if p_customer_type is 'individual'
+    IF p_customer_type = 'individual' THEN
+        INSERT INTO individual (individual_id, first_name, last_name, nic, dob)
+        VALUES (customer_id, p_first_name, p_last_name, p_nic, p_dob);
+    -- Insert organization-specific information into the 'organization' table if p_customer_type is 'organization'
+    ELSE
+        IF p_customer_type = 'organization' THEN
+        INSERT INTO organization (organization_id, name, organization_reg_no)
+        VALUES (customer_id, p_name, p_org_reg_no);
+        END IF;
+    END IF;
+
+    -- Insert customer credentials into the 'customer_credentials' table
+    INSERT INTO customer_credentials (email, pw_hash)
+    VALUES (p_email, p_pw_hash);
+
+    -- Check if there was an error
+    IF error_flag = 1 THEN
+        -- An error occurred, so rollback the transaction
+        ROLLBACK;
+        SET p_out_status =1;
+    ELSE
+        -- No error occurred, so commit the transaction
+        COMMIT;
+        SET p_out_status =0;
+    END IF;
+
+    -- Enable auto-commit
+    SET autocommit = 1;
+
+    -- Set the generated customer ID in the output parameter
+    /*SET p_generated_id = customer_id;*/
+
+END;
+//
+DELIMITER ;
+
+
+/*-----------------------Inserting a branch ------------------------------*/
+
+DELIMITER //
+CREATE PROCEDURE insert_branch(
+    IN p_branch_name VARCHAR(15),
+    IN p_address VARCHAR(150),
+    IN p_telephone INT,
+    IN p_manager VARCHAR(10),
+    IN p_opening_hours VARCHAR(15),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Insert data into the 'branch' table
+    INSERT INTO branch (branch_name, address, telephone, manager, opening_hours)
+    VALUES (p_branch_name, p_address, p_telephone, p_manager, p_opening_hours);
+
+    -- Check for errors
+    IF error_flag = 1 THEN
+        SET p_status = 1;
+    ELSE
+        SET p_status = 0;
+    END IF;
+END//
+DELIMITER ;
+
+
+/*----------------------Inserting an employee-------------------------------*/
+
+DELIMITER //
+CREATE PROCEDURE insert_employee(
+    IN p_branch_id BIGINT,
+    IN p_first_name VARCHAR(15),
+    IN p_last_name VARCHAR(15),
+    IN p_nic VARCHAR(12),
+    IN p_date_of_birth DATE,
+    IN p_address VARCHAR(70),
+    IN p_employee_type ENUM('manager', 'ordinary'),
+    IN p_pw_hash VARCHAR(255),
+     -- New parameter for password hash
+    OUT p_out_status INT
+)
+
+BEGIN
+
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Declare a variable to store the employee ID
+    DECLARE employee_id BIGINT;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Insert customer information into the 'customer' table
+    INSERT INTO employee (branch_id, first_name, last_name, nic, date_of_birth, address, employee_type)
+    VALUES (p_branch_id, p_first_name,p_last_name, p_nic, p_date_of_birth, p_address, p_employee_type);   /*p_nic_image,nic_image removed*/
+
+    -- Get the last auto-generated customer ID from the previous INSERT operation
+    SET employee_id = LAST_INSERT_ID();
+
+    -- Insert customer credentials into the 'customer_credentials' table
+    INSERT INTO employee_credentials (nic, pw_hash)
+    VALUES (p_nic, p_pw_hash);
+
+    -- Check if there was an error
+    IF error_flag = 1 THEN
+        -- An error occurred, so rollback the transaction
+        ROLLBACK;
+        SET p_out_status =1;
+    ELSE
+        -- No error occurred, so commit the transaction
+        COMMIT;
+        SET p_out_status =0;
+    END IF;
+
+    -- Enable auto-commit
+    SET autocommit = 1;
+
+    -- Set the generated customer ID in the output parameter
+    /*SET p_generated_id = customer_id;*/
+
+END;
+//
+DELIMITER ;
+
+/*-----------------------insert_account------------------------------*/
+DELIMITER //
+CREATE PROCEDURE insert_account(
+    IN p_customer_id BIGINT,
+    IN p_branch_id BIGINT,
+    IN p_balance DECIMAL(20,2),
+    IN p_account_type ENUM('saving','checking'),
+    IN p_s_acc_type ENUM('children', 'teen', 'adult', 'senior'),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare a variable to store an error flag
+    DECLARE error_flag INT DEFAULT 0;
+
+    -- Declare a variable to store the customer ID
+    DECLARE account_id BIGINT;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    INSERT INTO account (customer_id, branch_id, account_type, balance )
+        VALUES(p_customer_id,p_branch_id,p_account_type,p_balance);
+    SET account_id = LAST_INSERT_ID();
+
+    IF p_account_type='saving' THEN
+    INSERT INTO Saving_account(saving_acc_no, s_account_type, num_of_withdrawals)
+        VALUES(account_id,p_s_acc_type,0);
+    ELSE
+        IF p_account_type='checking' THEN
+            INSERT INTO Checking_account(checking_account_no)
+                VALUES (account_id);
+        END IF;
+    END IF;
+
+    -- Check for errors
+    IF error_flag = 1 THEN
+        ROLLBACK;
+        SET p_status = 1;
+    ELSE
+        COMMIT;
+        SET p_status = 0;
+    END IF;
+
+
+END//
+DELIMITER ;
+
+
+/*------------------------------------------transfer funds-------------------------------------------*/
+DELIMITER //
+
+CREATE PROCEDURE transfer_funds(
+    IN p_sender_account_id BIGINT,
+    IN p_receiver_account_id BIGINT,
+    IN p_amount DECIMAL(20, 2),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare variables to store an error flag , current balances and date/time
+    DECLARE error_flag INT DEFAULT 0;
+    DECLARE sender_balance DECIMAL(20, 2);
+    DECLARE receiver_balance DECIMAL(20, 2);
+    DECLARE cur_date DATE;
+    DECLARE cur_time TIME;
+
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Get the current balances of the sender and receiver accounts
+    SELECT balance INTO sender_balance FROM account WHERE account_no = p_sender_account_id;
+    SELECT balance INTO receiver_balance FROM account WHERE account_no = p_receiver_account_id;
+
+    -- Check if the sender has enough balance for the transaction
+    IF sender_balance >= p_amount THEN
+        -- Update the sender's balance
+        UPDATE account SET balance = sender_balance - p_amount WHERE account_no = p_sender_account_id;
+
+
+        -- Update the receiver's balance
+        UPDATE account SET balance = receiver_balance + p_amount WHERE account_no = p_receiver_account_id;
+        SELECT CURDATE() INTO cur_date;
+        SELECT CURTIME() INTO cur_time;
+
+        -- log the transaction
+        INSERT INTO transaction (sender_account_id, receiver_account_id, amount, date, time )
+        VALUES (p_sender_account_id, p_receiver_account_id, p_amount,cur_date,cur_time);
+
+        -- Commit the transaction
+        COMMIT;
+        SET p_status = 0;  -- Success
+    ELSE
+        -- Rollback the transaction
+        ROLLBACK;
+        SET p_status = 1;  -- Insufficient balance
+    END IF;
+
+    -- Re-enable auto-commit
+    SET autocommit = 1;
+END//
+
+DELIMITER ;
+/*----------------------------------cash deposit------------------------------------*/
+
+DELIMITER //
+
+CREATE PROCEDURE cash_deposit(
+    IN p_account_id BIGINT,
+    IN p_deposit_amount DECIMAL(20, 2),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare variables to store an error flag and current balance / DATE AND TIME
+    DECLARE error_flag INT DEFAULT 0;
+    DECLARE current_balance DECIMAL(20, 2);
+    DECLARE cur_date DATE;
+    DECLARE cur_time TIME;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Get the current balance of the account
+    SELECT balance INTO current_balance FROM account WHERE account_no = p_account_id;
+
+    -- Update the account balance and log the deposit
+    SELECT CURDATE() INTO cur_date;
+    SELECT CURTIME() INTO cur_time;
+
+    UPDATE account SET balance = current_balance + p_deposit_amount WHERE account_no = p_account_id;
+    INSERT INTO deposit (account_id, Date, Time, amount) VALUES (p_account_id,cur_date, cur_time, p_deposit_amount);
+
+    -- Commit the transaction
+    IF error_flag=1 THEN
+        ROLLBACK;
+        SET p_status = 1;
+    ELSE
+        COMMIT;
+        SET p_status = 0;  -- Success
+    end if;
+    -- Re-enable auto-commit
+    SET autocommit = 1;
+END//
+
+DELIMITER ;
+
+/*------------------------------------------------------*/
+DELIMITER //
+
+CREATE PROCEDURE cash_withdraw(
+    IN p_account_id BIGINT,
+    IN p_withdrawal_amount DECIMAL(20, 2),
+    OUT p_status INT
+)
+BEGIN
+    -- Declare variables to store an error flag and current balance
+    DECLARE error_flag INT DEFAULT 0;
+    DECLARE current_balance DECIMAL(20, 2);
+    DECLARE withdrawal_cnt INT;
+    DECLARE acc_type ENUM('saving','checking');
+    DECLARE cur_date DATE;
+    DECLARE cur_time TIME;
+
+    -- Use a handler to capture any errors that occur within the transaction
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET error_flag = 1;
+
+    -- Disable auto-commit
+    SET autocommit = 0;
+
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- Get the current balance of the account
+    SELECT balance INTO current_balance FROM account WHERE account_no = p_account_id;
+    SELECT num_of_withdawals INTO withdrawal_cnt FROM saving_account WHERE saving_acc_no= p_account_id;
+    SELECT gringots_bk.account.account_type INTO acc_type FROM account WHERE account_no = p_account_id;
+
+    -- Check if there's sufficient balance for the withdrawal
+    IF current_balance >= p_withdrawal_amount  THEN
+        SELECT CURDATE() INTO cur_date;
+        SELECT CURTIME() INTO cur_time;
+        -- Update the account balance and log the withdrawal
+        IF acc_type='saving' AND withdrawal_cnt<6 THEN
+            UPDATE account SET balance = current_balance - p_withdrawal_amount WHERE account_no = p_account_id;
+            INSERT INTO withdrawal (account_id, date,time, amount)
+                VALUES (p_account_id, cur_date, cur_time, p_withdrawal_amount);
+
+            UPDATE saving_account SET num_of_withdawals = withdrawal_cnt+1 WHERE saving_acc_no = p_account_id;
+        ELSE
+            UPDATE account SET balance = current_balance - p_withdrawal_amount WHERE account_no = p_account_id;
+        END IF;
+
+        IF error_flag=-0 THEN
+            -- Commit the transaction
+            COMMIT;
+            SET p_status = 0;  -- Success
+        ELSE
+            ROLLBACK;
+            SET p_status = 1;
+        END IF;
+    ELSE
+        -- Rollback the transaction
+        ROLLBACK;
+        SET p_status = 1;  -- Insufficient balance
+    END IF;
+
+    -- Re-enable auto-commit
+    SET autocommit = 1;
+END//
+
+DELIMITER ;
+
+
+
