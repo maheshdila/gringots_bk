@@ -1,5 +1,7 @@
 package com.gringots.service;
 
+import com.gringots.model.request.AccountRequestDto;
+import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
 
 import java.io.UnsupportedEncodingException;
@@ -10,4 +12,6 @@ public interface CustomerService {
     boolean registerCustomer(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException;
 
     CustomerRequestDto getCustomerDetailsById(String id);
+
+    CommonResponseDto createAccount(AccountRequestDto accountRequestDto) throws SQLException;
 }
