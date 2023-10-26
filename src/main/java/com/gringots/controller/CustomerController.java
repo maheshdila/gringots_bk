@@ -4,11 +4,9 @@ import com.gringots.dao.Customer.CustomerDao;
 import com.gringots.model.request.CustomerRequestDto;
 import com.gringots.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {

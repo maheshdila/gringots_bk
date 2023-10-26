@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-
+@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 @RequestMapping("/account")
 public class AccountController {
@@ -16,10 +16,11 @@ public class AccountController {
     @Autowired
     CustomerService customerService;
 
-    @RequestMapping(value = "/saving" , method = RequestMethod.POST)
+    @RequestMapping(value = "/create" , method = RequestMethod.POST)
 
-    public String createSaving(@RequestBody AccountRequestDto accountRequestDto,@RequestParam Integer id) throws SQLException {
+    public String createSaving(@RequestBody AccountRequestDto accountRequestDto) throws SQLException {
         customerService.createAccount(accountRequestDto);
+        System.out.println(accountRequestDto.toString());
         return accountRequestDto.toString();
     }
 
