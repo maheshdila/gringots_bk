@@ -22,20 +22,6 @@ public class AccountDaoImpl implements AccountDao{
         stmt.setString(5,accountRequestDto.getSavingAccType());
         stmt.executeUpdate();
     }
-    /*public customerAccountResponseDto getAccount(long accnum) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        String sql = "SELECT account_no, ac.customer_id, branch_id, account_type, balance, cs.email, cs.address, cs.customer_type, cs.phone_number " +
-                "FROM account AS ac " +
-                "INNER JOIN customer AS cs ON ac.customer_id = cs.customer_id " +
-                "WHERE ac.account_no = ?";
-        PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1,accnum);
-        if(stmt.executeUpdate()>0){
-
-        }else {
-            //not exist
-        };
-*/
     public CustomerAccountResponseDto getAccount(long accnum) throws SQLException {
         Connection connection = dataSource.getConnection();
         String sql = "SELECT account_no, ac.customer_id, branch_id, account_type, balance, cs.email, cs.address, cs.customer_type, cs.phone_number " +
@@ -59,12 +45,15 @@ public class AccountDaoImpl implements AccountDao{
             responseDto.setAddress(resultSet.getString("address"));
             responseDto.setCustomerType(resultSet.getString("customer_type"));
             responseDto.setPhoneNumber(resultSet.getString("phone_number"));
+            responseDto.setResponseCode("200");
 
             return responseDto;
         } else {
+            CustomerAccountResponseDto customerAccountResponseDto= new CustomerAccountResponseDto();
+            customerAccountResponseDto.setResponseCode("404");
+            customerAccountResponseDto.setResponseMessage("Account not found");
             // Handle the case when the account does not exist (return null, throw an exception, etc.)
-            return null;
+            return customerAccountResponseDto;
         }
     }
-
 }

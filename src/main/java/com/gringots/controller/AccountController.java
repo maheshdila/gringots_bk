@@ -31,11 +31,12 @@ public class AccountController {
     public CustomerAccountResponseDto getAccount(@PathVariable("accnum") long accnum){
         //CommonResponseDto commonResponseDto = new CommonResponseDto();
         try {
-             CustomerAccountResponseDto response=accountService.getAccount(accnum);
-             response.setResponseCode("200");
-             return response;
+             return accountService.getAccount(accnum);
+             //response.setResponseCode("200");
+
         } catch (SQLException e) {
             CustomerAccountResponseDto response = new CustomerAccountResponseDto();
+            response.setResponseMessage("Account not found");
             response.setResponseCode("404");
             return response;
         }
