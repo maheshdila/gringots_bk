@@ -39,7 +39,7 @@ public class AccountController {
         //return commonResponseDto;
         try {
             commonResponseDto = accountService.getAccountbyNum(accnum);
-            System.out.println(commonResponseDto.getResponseCode()+"controller");
+            //System.out.println(commonResponseDto.getResponseCode()+"controller");
             return commonResponseDto;
         } catch (SQLException e) {
             commonResponseDto.setResponseCode(e.getErrorCode()+"");
