@@ -7,8 +7,6 @@ import lombok.Data;
 //@Setter
 @Data
 public class CustomerAccountResponseDto {
-    private String responseCode;
-    private String responseMessage;
     private String accountNumber;
     private String customerId;
     private String branch_id;

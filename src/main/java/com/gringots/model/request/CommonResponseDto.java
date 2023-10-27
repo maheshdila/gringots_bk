@@ -10,5 +10,6 @@ public class CommonResponseDto {
 
     boolean isQuerySuccesful;
     private String responseCode;
+    private String responseMessage;
     private Object responseObject;
 }

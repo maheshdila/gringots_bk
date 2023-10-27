@@ -22,23 +22,29 @@ public class AccountController {
 
     @RequestMapping(value = "/create" , method = RequestMethod.POST)
 
-    public AccountRequestDto createSaving(@RequestBody AccountRequestDto accountRequestDto) throws SQLException {
-        customerService.createAccount(accountRequestDto);
-        System.out.println(accountRequestDto.toString());
-        return accountRequestDto;
+    public CommonResponseDto createAccount(@RequestBody AccountRequestDto accountRequestDto) {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try {
+            commonResponseDto = accountService.createAccount(accountRequestDto);
+        } catch (SQLException e) {
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
     }
     @RequestMapping(value = "get/{accnum}" , method = RequestMethod.GET)
-    public CustomerAccountResponseDto getAccount(@PathVariable("accnum") long accnum){
-        //CommonResponseDto commonResponseDto = new CommonResponseDto();
+    public CommonResponseDto getAccount(@PathVariable("accnum") long accnum){
+         //return new CommonResponseDto();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        //return commonResponseDto;
         try {
-             return accountService.getAccount(accnum);
-             //response.setResponseCode("200");
-
+            commonResponseDto = accountService.getAccountbyNum(accnum);
+            System.out.println(commonResponseDto.getResponseCode()+"controller");
+            return commonResponseDto;
         } catch (SQLException e) {
-            CustomerAccountResponseDto response = new CustomerAccountResponseDto();
-            response.setResponseMessage("Account not found");
-            response.setResponseCode("404");
-            return response;
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+            return commonResponseDto;
         }
 
     }
