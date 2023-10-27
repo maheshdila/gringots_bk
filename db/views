@@ -1,0 +1,4 @@
+CREATE VIEW account_customer_view AS
+SELECT account_no, ac.customer_id, branch_id, account_type, balance, cs.email, cs.address, cs.customer_type, cs.phone_number
+FROM account AS ac
+INNER JOIN customer AS cs ON ac.customer_id = cs.customer_id;
