@@ -39,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerRequestDto getCustomerDetailsById(String email) {
-        //customerDao.customerAlreadyExist()
+        customerDao.customerAlreadyExist(email);
         return null;
     }
 
