@@ -158,6 +158,29 @@ public class CustomerDaoImpl implements CustomerDao {
         // This code should be within a try-catch-finally block for proper exception handling and resource management.
     }
 
+    @Override
+    public CommonResponseDto login(String email) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        PreparedStatement stmt =
+                connection.prepareStatement("SELECT pw_hash FROM customer_credentials where email=?");
+        stmt.setString(1,email);
+        ResultSet resultSet = stmt.executeQuery();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        if(resultSet.next()){
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("credential found");
+            commonResponseDto.setResponseObject(new String(resultSet.getString("pw_hash")));
+        }
+        else{
+            commonResponseDto.setQuerySuccesful(false);
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("credential not found");
+        }
+
+        return commonResponseDto;
+    }
+
 
 
     /* public void createUsingProcedures(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException {
@@ -207,6 +230,7 @@ public class CustomerDaoImpl implements CustomerDao {
     public void rollback() throws SQLException {
 
     }
+
 
 
 }

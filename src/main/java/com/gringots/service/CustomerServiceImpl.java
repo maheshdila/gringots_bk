@@ -49,4 +49,9 @@ public class CustomerServiceImpl implements CustomerService{
         accountDao.createAccountUsingProcedures(accountRequestDto);
         return null;
     }
+
+    @Override
+    public CommonResponseDto login(String email) throws SQLException {
+        return customerDao.login(email);
+    }
 }

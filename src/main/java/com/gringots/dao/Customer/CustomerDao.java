@@ -22,4 +22,6 @@ public interface CustomerDao {
     //CommonResponseDto createOrganization(String organizationName, String organizationRegNo, String contactPersonName,int recordId) throws SQLException;
     void createUsingProcedures() throws SQLException, UnsupportedEncodingException;
 
+    public CommonResponseDto login(String email) throws SQLException;
+
 }
