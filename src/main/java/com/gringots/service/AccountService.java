@@ -11,5 +11,5 @@ public interface AccountService {
 
      CommonResponseDto getAccountbyNum(long accnum) throws SQLException;
      //CustomerAccountResponseDto getAccount(long accnum) throws SQLException;
-
+     CommonResponseDto deposit(long accnum, double amount) throws SQLException;
 }

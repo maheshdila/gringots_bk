@@ -38,46 +38,7 @@ public class AccountDaoImpl implements AccountDao{
         return commonResponseDto;
 
     }
-    /*public CommonResponseDto getAccount(long accnum) throws SQLException {
-        Connection connection = dataSource.getConnection();
-        String sql = "SELECT account_no, ac.customer_id, branch_id, account_type, balance, cs.email, cs.address, cs.customer_type, cs.phone_number " +
-                "FROM account AS ac " +
-                "INNER JOIN customer AS cs ON ac.customer_id = cs.customer_id " +
-                "WHERE ac.account_no = ?";
-        //String sql = "SELECT * FROM account_customer_view WHERE account_no = ?";
-        PreparedStatement stmt = connection.prepareStatement(sql);
-        stmt.setLong(1, accnum);
 
-        CommonResponseDto response = new CommonResponseDto();
-        ResultSet resultSet = stmt.executeQuery();
-        System.out.println(resultSet.getString("account_type"));
-
-        if (resultSet.next()) {
-            // Retrieve data from the ResultSet and create a customerAccountResponseDto object
-            CustomerAccountResponseDto responseDto = new CustomerAccountResponseDto();
-            responseDto.setAccountNumber(resultSet.getString("account_no"));
-            responseDto.setCustomerId(resultSet.getString("customer_id"));
-            responseDto.setBranch_id(resultSet.getString("branch_id"));
-            responseDto.setAccountType(resultSet.getString("account_type"));
-            responseDto.setBalance(resultSet.getDouble("balance"));
-            responseDto.setEmail(resultSet.getString("email"));
-            responseDto.setAddress(resultSet.getString("address"));
-            responseDto.setCustomerType(resultSet.getString("customer_type"));
-            responseDto.setPhoneNumber(resultSet.getString("phone_number"));
-            System.out.println(responseDto.toString());
-
-            response.setResponseCode("200");
-            response.setQuerySuccesful(true);
-            response.setResponseObject(responseDto);
-            response.setResponseMessage("Account found");
-        } else {
-            response.setResponseCode("404");
-            response.setQuerySuccesful(false);
-            //response.setResponseObject(responseDto);
-            response.setResponseMessage("Account not found");
-        }
-        return response;
-    }*/
     public CommonResponseDto getAccount(long accnum) {
         CommonResponseDto response = new CommonResponseDto();
         Connection connection = null;
@@ -133,6 +94,32 @@ public class AccountDaoImpl implements AccountDao{
         }
 
         return response;
+    }
+
+    @Override
+    public CommonResponseDto deposit(long accnum, double amount) throws SQLException {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        CallableStatement stmt = connection.prepareCall("{CALL cash_deposit(?,?,?) }");//it does n't maatter whetherr we set a
+        // value to the 3rd parameter or not as it is output, it will be set by the procedure
+        //make sure to put 3 question marks in the procedure
+        stmt.setLong(1,accnum);
+        stmt.setDouble(2,amount);
+        stmt.registerOutParameter(3,Types.DOUBLE);
+        stmt.executeUpdate();
+        if(stmt.getDouble(3)==0){
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Deposit successful");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseObject(stmt.getDouble(3));
+        }
+        else{
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Deposit failed");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+
+    return commonResponseDto;
     }
 
 }

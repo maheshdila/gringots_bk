@@ -26,4 +26,9 @@ public class AccountServiceImpl implements AccountService{
         return accountDao.getAccount(accnum);
     }
 
+    @Override
+    public CommonResponseDto deposit(long accnum, double amount) throws SQLException {
+        return accountDao.deposit(accnum,amount);
+    }
+
 }

@@ -61,4 +61,16 @@ public class AccountController {
 
         return  commonResponseDto;
     }
+
+    @RequestMapping(value = "/deposit/" ,params = {"accnum","amount"}, method = RequestMethod.POST)
+    public CommonResponseDto deposit(@RequestParam long accnum, @RequestParam double amount) {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try {
+            commonResponseDto = accountService.deposit(accnum,amount);
+        } catch (SQLException e) {
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
 }

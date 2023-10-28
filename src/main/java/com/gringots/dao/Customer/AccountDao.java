@@ -9,4 +9,8 @@ import java.sql.SQLException;
 public interface AccountDao {
      public CommonResponseDto createAccountUsingProcedures(AccountRequestDto accountRequestDto) throws SQLException;
      CommonResponseDto getAccount(long accnum) throws SQLException;
+
+     CommonResponseDto deposit(long accnum,double amount) throws SQLException;
+
+
 }
