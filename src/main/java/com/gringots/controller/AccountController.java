@@ -73,4 +73,33 @@ public class AccountController {
         }
         return commonResponseDto;
     }
+    @RequestMapping(value="/transfer/",params = {"toAcc","fromAcc","amount"}, method = RequestMethod.POST)
+    public CommonResponseDto transfer(@RequestParam long toAcc,
+                                      @RequestParam long fromAcc,
+                                      @RequestParam double amount){
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try{
+            commonResponseDto = accountService.transfer(toAcc,fromAcc,amount);
+        } catch (SQLException e) {
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
+
+    @RequestMapping(value="/createFd/", params = {"savingAcc","amount","account_type"}, method = RequestMethod.POST)
+    public CommonResponseDto createFd(
+            @RequestParam long savingAcc,
+            @RequestParam double amount,
+            @RequestParam String account_type){
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try{
+            commonResponseDto = accountService.createFd(savingAcc,amount,account_type);
+        } catch (SQLException e) {
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
+
 }

@@ -27,6 +27,7 @@ public class AccountDaoImpl implements AccountDao{
             commonResponseDto.setResponseCode("200");
             commonResponseDto.setResponseMessage("Account created successfully");
             commonResponseDto.setQuerySuccesful(true);
+            //commonResponseDto.setResponseObject();
 
         }
         else{
@@ -121,5 +122,52 @@ public class AccountDaoImpl implements AccountDao{
 
     return commonResponseDto;
     }
+
+    @Override
+    public CommonResponseDto transfer(long toAcc, long fromAcc, double amount) throws SQLException {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        CallableStatement stmt = connection.prepareCall("{CALL transfer_funds(?,?,?,?) }");//it does n't maatter whetherr we set a
+        stmt.setLong(1,fromAcc);
+        stmt.setLong(2,toAcc);
+        stmt.setDouble(3,amount);
+        stmt.registerOutParameter(4,Types.INTEGER);
+        stmt.executeUpdate();
+        if (stmt.getInt(4)==0){
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Transfer successful");
+            commonResponseDto.setQuerySuccesful(true);
+        }
+        else{
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Transfer failed");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+        return commonResponseDto;
+    }
+
+    @Override
+    public CommonResponseDto createFD(long savingAcc, double amount, String accountType) throws SQLException {
+        Connection connection= dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO fixed_deposit (saving_acc_no, amount, account_type) VALUES (?,?,?)");
+        statement.setLong(1,savingAcc);
+        statement.setDouble(2,amount);
+        statement.setString(3,accountType);
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        if(statement.executeUpdate()>0){
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseMessage("FD created successfully");
+            //commonResponseDto.setResponseObject(statement.getGeneratedKeys());
+        }
+        else {
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setQuerySuccesful(false);
+            commonResponseDto.setResponseMessage("FD creation failed");
+        }
+        return commonResponseDto;
+    }
+
 
 }

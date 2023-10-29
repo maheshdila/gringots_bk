@@ -13,4 +13,7 @@ public interface AccountDao {
      CommonResponseDto deposit(long accnum,double amount) throws SQLException;
 
 
+     CommonResponseDto transfer(long toAcc, long fromAcc, double amount) throws SQLException;
+
+    CommonResponseDto createFD(long savingAcc, double amount, String accountType) throws SQLException;
 }

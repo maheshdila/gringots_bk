@@ -31,4 +31,26 @@ public class AccountServiceImpl implements AccountService{
         return accountDao.deposit(accnum,amount);
     }
 
+    @Override
+    public CommonResponseDto transfer(long toAcc, long fromAcc, double amount) throws SQLException {
+        return accountDao.transfer(toAcc,fromAcc,amount);
+    }
+
+    @Override
+    public CommonResponseDto createFd(long savingAcc, double amount, String accountType) throws SQLException {
+        CommonResponseDto responseDto =accountDao.getAccount(savingAcc);
+        CustomerAccountResponseDto customerAccountResponseDto = (CustomerAccountResponseDto) responseDto.getResponseObject();
+        System.out.println(customerAccountResponseDto.getAccountType());
+        if(customerAccountResponseDto.getAccountType().equalsIgnoreCase("saving")){
+            return accountDao.createFD(savingAcc,amount,accountType);
+
+        }
+        else {
+            CommonResponseDto commonResponseDto = new CommonResponseDto();
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Invalid saving account");
+            commonResponseDto.setQuerySuccesful(false);
+            return commonResponseDto;
+        }
+    }
 }

@@ -12,4 +12,8 @@ public interface AccountService {
      CommonResponseDto getAccountbyNum(long accnum) throws SQLException;
      //CustomerAccountResponseDto getAccount(long accnum) throws SQLException;
      CommonResponseDto deposit(long accnum, double amount) throws SQLException;
+
+    CommonResponseDto transfer(long toAcc, long fromAcc, double amount) throws SQLException;
+
+    CommonResponseDto createFd(long savingAcc, double amount, String accountType) throws SQLException;
 }
