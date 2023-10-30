@@ -343,7 +343,8 @@ END//
 
 DELIMITER ;
 
-/*------------------------------------------------------*/
+/*--------------------------Cash withdrawals--------------------------------------------*/
+
 DELIMITER //
 
 CREATE PROCEDURE cash_withdraw(
@@ -371,7 +372,7 @@ BEGIN
 
     -- Get the current balance of the account
     SELECT balance INTO current_balance FROM account WHERE account_no = p_account_id;
-    SELECT num_of_withdawals INTO withdrawal_cnt FROM saving_account WHERE saving_acc_no= p_account_id;
+    SELECT num_of_withdrawals INTO withdrawal_cnt FROM saving_account WHERE saving_acc_no= p_account_id;
     SELECT gringots_bk.account.account_type INTO acc_type FROM account WHERE account_no = p_account_id;
 
     -- Check if there's sufficient balance for the withdrawal
@@ -384,7 +385,7 @@ BEGIN
             INSERT INTO withdrawal (account_id, date,time, amount)
                 VALUES (p_account_id, cur_date, cur_time, p_withdrawal_amount);
 
-            UPDATE saving_account SET num_of_withdawals = withdrawal_cnt+1 WHERE saving_acc_no = p_account_id;
+            UPDATE saving_account SET num_of_withdrawals = withdrawal_cnt+1 WHERE saving_acc_no = p_account_id;
         ELSE
             UPDATE account SET balance = current_balance - p_withdrawal_amount WHERE account_no = p_account_id;
         END IF;
@@ -408,6 +409,3 @@ BEGIN
 END//
 
 DELIMITER ;
-
-
-
