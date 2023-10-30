@@ -1,14 +1,14 @@
 package com.gringots.dao.Customer;
 
-import com.gringots.dao.Customer.CustomerDao;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
+import com.gringots.model.response.IndividualResponseDto;
+import com.gringots.model.response.OrganizationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import javax.sql.rowset.serial.SerialBlob;
 import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.text.ParseException;
@@ -179,6 +179,45 @@ public class CustomerDaoImpl implements CustomerDao {
         }
 
         return commonResponseDto;
+    }
+
+    @Override
+    public IndividualResponseDto getIndividualByid(long customerId) throws SQLException {
+        IndividualResponseDto individualResponseDto = new IndividualResponseDto();
+
+        Connection connection = dataSource.getConnection();
+        String sql = "SELECT * FROM individual WHERE individual_id=? ";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setLong(1,customerId);
+        ResultSet resultSet = statement.executeQuery();
+        //System.out.println(resultSet.getString(2));
+        if(resultSet.next()){
+            individualResponseDto.setFirstName(resultSet.getString("first_name"));
+
+            individualResponseDto.setLastName(resultSet.getString("last_name"));
+            individualResponseDto.setNic(resultSet.getString("nic"));
+            individualResponseDto.setDob(resultSet.getDate("dob"));
+
+        }
+        return individualResponseDto;
+    }
+
+    @Override
+    public OrganizationResponseDto getOrganizationByid(long customerId) throws SQLException {
+        OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
+        Connection connection = dataSource.getConnection();
+        String sql = "SELECT * FROM gringots_bk.organization WHERE organization_id=? ";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setLong(1,customerId);
+        ResultSet resultSet = statement.executeQuery();
+
+        if(resultSet.next()){
+            organizationResponseDto.setOrgName(resultSet.getString("name"));
+            organizationResponseDto.setOrgRegnum(resultSet.getString("organization_reg_no"));
+            //organizationResponseDto.setContactPersonName(resultSet.getString("contact_person_name"));
+        }
+
+        return organizationResponseDto;
     }
 
 

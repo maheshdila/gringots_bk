@@ -59,8 +59,8 @@ public class AccountDaoImpl implements AccountDao{
 
             if (resultSet.next()) {
                 CustomerAccountResponseDto responseDto = new CustomerAccountResponseDto();
-                responseDto.setAccountNumber(resultSet.getString("account_no"));
-                responseDto.setCustomerId(resultSet.getString("customer_id"));
+                responseDto.setAccountNumber(resultSet.getLong("account_no"));
+                responseDto.setCustomerId(resultSet.getLong("customer_id"));
                 responseDto.setBranch_id(resultSet.getString("branch_id"));
                 responseDto.setAccountType(resultSet.getString("account_type"));
                 responseDto.setBalance(resultSet.getDouble("balance"));

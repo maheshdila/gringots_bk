@@ -2,6 +2,8 @@ package com.gringots.dao.Customer;
 
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
+import com.gringots.model.response.IndividualResponseDto;
+import com.gringots.model.response.OrganizationResponseDto;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
@@ -23,5 +25,8 @@ public interface CustomerDao {
     void createUsingProcedures() throws SQLException, UnsupportedEncodingException;
 
     public CommonResponseDto login(String email) throws SQLException;
+
+    IndividualResponseDto getIndividualByid(long customerId) throws SQLException;
+    OrganizationResponseDto getOrganizationByid(long customerId) throws SQLException;
 
 }

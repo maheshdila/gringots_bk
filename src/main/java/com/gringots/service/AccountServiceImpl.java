@@ -1,9 +1,12 @@
 package com.gringots.service;
 
 import com.gringots.dao.Customer.AccountDao;
+import com.gringots.dao.Customer.CustomerDao;
 import com.gringots.model.request.AccountRequestDto;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.response.CustomerAccountResponseDto;
+import com.gringots.model.response.IndividualResponseDto;
+import com.gringots.model.response.OrganizationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,9 @@ public class AccountServiceImpl implements AccountService{
     @Autowired
     AccountDao accountDao;
 
+    @Autowired
+    CustomerDao customerDao;
+
     @Override
     public CommonResponseDto createAccount(AccountRequestDto accountRequestDto) throws SQLException {
         return accountDao.createAccountUsingProcedures(accountRequestDto);
@@ -23,7 +29,28 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public CommonResponseDto getAccountbyNum(long accnum) throws SQLException {
-        return accountDao.getAccount(accnum);
+        CommonResponseDto commonResponseDto= accountDao.getAccount(accnum);
+        CustomerAccountResponseDto customerAccountResponseDto = (CustomerAccountResponseDto) commonResponseDto.getResponseObject();
+
+        if (customerAccountResponseDto.getCustomerType().equalsIgnoreCase("individual")){
+            IndividualResponseDto individualResponseDto =  customerDao.getIndividualByid(customerAccountResponseDto.getCustomerId());
+            customerAccountResponseDto.setFirstName(individualResponseDto.getFirstName());
+            customerAccountResponseDto.setLastName(individualResponseDto.getLastName());
+            customerAccountResponseDto.setNic(individualResponseDto.getNic());
+            customerAccountResponseDto.setDob(individualResponseDto.getDob());
+
+            commonResponseDto.setResponseObject(customerAccountResponseDto);
+
+        }
+        else if(customerAccountResponseDto.getCustomerType().equalsIgnoreCase("organization")){
+            OrganizationResponseDto organizationResponseDto = customerDao.getOrganizationByid(customerAccountResponseDto.getCustomerId());
+            customerAccountResponseDto.setOrgName(organizationResponseDto.getOrgName());
+            customerAccountResponseDto.setOrgRegNumber(organizationResponseDto.getOrgRegnum());
+
+            commonResponseDto.setResponseObject(customerAccountResponseDto);
+            //return commonResponseDto;
+        }
+        return commonResponseDto;
     }
 
     @Override
