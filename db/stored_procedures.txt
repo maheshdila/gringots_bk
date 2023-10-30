@@ -274,9 +274,14 @@ BEGIN
         INSERT INTO transaction (sender_account_id, receiver_account_id, amount, date, time )
         VALUES (p_sender_account_id, p_receiver_account_id, p_amount,cur_date,cur_time);
 
-        -- Commit the transaction
-        COMMIT;
-        SET p_status = 0;  -- Success
+        IF error_flag=0 THEN
+            -- Commit the transaction
+            COMMIT;
+            SET p_status = 0;  -- Success
+        ELSE
+            SET p_status = 1;
+            ROLLBACK;
+        END IF;
     ELSE
         -- Rollback the transaction
         ROLLBACK;
@@ -288,6 +293,7 @@ BEGIN
 END//
 
 DELIMITER ;
+
 /*----------------------------------cash deposit------------------------------------*/
 
 DELIMITER //
