@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Date;
+
 @JsonIgnoreProperties
 @Getter
 @Setter
@@ -17,11 +19,9 @@ public class EmployeeRequestDto {
     private String first_name;
     private String last_name;
     private String nic;
-    /*private Date date;   */
-    private String date;
+    private Date date;
     private String address;
-
-    private String  sth;
+    private String  employee_type;
     private String pw_hash;
 
 
