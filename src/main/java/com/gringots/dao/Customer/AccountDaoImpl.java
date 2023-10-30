@@ -17,7 +17,7 @@ public class AccountDaoImpl implements AccountDao{
         Connection connection = dataSource.getConnection();
         CallableStatement stmt = connection.prepareCall("{CALL insert_account(?,?,?,?,?,?) }");
         stmt.setInt(1,accountRequestDto.getCustomerId());
-        stmt.setInt(2,accountRequestDto.getCustomerId());
+        stmt.setInt(2,accountRequestDto.getBranchId());
         stmt.setDouble(3,accountRequestDto.getBalance());
         stmt.setString(4,accountRequestDto.getAccType());
         stmt.setString(5,accountRequestDto.getSavingAccType());
