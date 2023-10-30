@@ -1,14 +1,15 @@
 package com.gringots.controller;
 
 import com.gringots.dao.Customer.CustomerDao;
+import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
 import com.gringots.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+
+@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
@@ -31,5 +32,18 @@ public class CustomerController {
                return "Customer creation Unsuccessful";
            }
     //return "Customer Created Successful";
+    }
+   // @GetMapping(params = {"email"})
+    @RequestMapping(value="/login/{email}", method = RequestMethod.GET)
+    public CommonResponseDto login(@PathVariable String email){
+        CommonResponseDto commonResponseDto;
+        try {
+            return customerService.login(email);
+        } catch (SQLException e) {
+            commonResponseDto = new CommonResponseDto();
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+            return commonResponseDto;
+        }
     }
 }

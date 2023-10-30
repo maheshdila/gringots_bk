@@ -39,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerRequestDto getCustomerDetailsById(String email) {
-        //customerDao.customerAlreadyExist()
+        customerDao.customerAlreadyExist(email);
         return null;
     }
 
@@ -48,5 +48,10 @@ public class CustomerServiceImpl implements CustomerService{
         //AccountDao accountDao = (AccountDao) new AccountDaoImpl();
         accountDao.createAccountUsingProcedures(accountRequestDto);
         return null;
+    }
+
+    @Override
+    public CommonResponseDto login(String email) throws SQLException {
+        return customerDao.login(email);
     }
 }
