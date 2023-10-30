@@ -16,4 +16,6 @@ public interface AccountDao {
      CommonResponseDto transfer(long toAcc, long fromAcc, double amount) throws SQLException;
 
     CommonResponseDto createFD(long savingAcc, double amount, String accountType) throws SQLException;
+
+    CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException;
 }

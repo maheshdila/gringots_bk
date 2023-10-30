@@ -102,4 +102,18 @@ public class AccountController {
         return commonResponseDto;
     }
 
+    @RequestMapping(value = "/cashwithrawals/" ,params = {"account_id","withdrawal_amount"}, method = RequestMethod.POST)
+    public CommonResponseDto cashWithdrawal(@RequestParam long account_id, @RequestParam double withdrawal_amount) {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+
+        try {
+            commonResponseDto = accountService.cashWithdrawal(account_id,withdrawal_amount);
+        } catch (SQLException e){
+            System.out.println("um ghere");
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
+
 }
