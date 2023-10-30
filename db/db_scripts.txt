@@ -162,9 +162,9 @@ CREATE TABLE `loan_info` (
   `late_installments` INT,
   `total_installments` INT,
   PRIMARY KEY (`loan_id`),
-  FOREIGN KEY (`saving_account`) REFERENCES `Saving_account`(`saving_acc_no`),
+  FOREIGN KEY (`saving_account_id`) REFERENCES `Saving_account`(`saving_acc_no`),
   FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
-  FOREIGN KEY (`fixed_deposit`) REFERENCES `fixed_deposit`(`deposit_id`)
+  FOREIGN KEY (`fixed_deposit_id`) REFERENCES `fixed_deposit`(`deposit_id`)
 )AUTO_INCREMENT = 100000000 -- 9 figure loan_id;
 
 
