@@ -148,10 +148,11 @@ CREATE TABLE `Withdrawal` (
 );
 
 CREATE TABLE `loan_info` (
-  `loan_id` BIGINT,
+  `loan_id` BIGINT AUTO_INCREMENT,
   `customer_id` BIGINT,
   `branch_id` BIGINT,
-  `saving_account` BIGINT,
+  `saving_account_id` BIGINT,
+  `fixed_deposit_id` BIGINT,
   `loan_type` enum('online','physical'),
   `settlement_period` INT,--
   `amount` NUMERIC(15,2),
@@ -162,7 +163,8 @@ CREATE TABLE `loan_info` (
   `total_installments` INT,
   PRIMARY KEY (`loan_id`),
   FOREIGN KEY (`saving_account`) REFERENCES `Saving_account`(`saving_acc_no`),
-  FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`)
-);
+  FOREIGN KEY (`customer_id`) REFERENCES `customer`(`customer_id`),
+  FOREIGN KEY (`fixed_deposit`) REFERENCES `fixed_deposit`(`deposit_id`)
+)AUTO_INCREMENT = 100000000 -- 9 figure loan_id;
 
 
