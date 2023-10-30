@@ -16,8 +16,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public CommonResponseDto createEmployee(EmployeeRequestDto employeeRequestDto) throws SQLException {
-        employeeDao.createEmployee(employeeRequestDto);
+        return employeeDao.createEmployee(employeeRequestDto);
 
-        return null;
+
+    }
+
+    @Override
+    public CommonResponseDto login(String email) throws SQLException {
+        return employeeDao.login(email);
     }
 }

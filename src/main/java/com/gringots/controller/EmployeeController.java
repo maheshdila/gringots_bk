@@ -4,10 +4,7 @@ import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.EmployeeRequestDto;
 import com.gringots.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 
@@ -20,8 +17,20 @@ public class EmployeeController {
     @PostMapping
     public CommonResponseDto createEmployee (@RequestBody EmployeeRequestDto employeeRequestDto) throws SQLException {
         employeeService.createEmployee(employeeRequestDto);
-
         return null;
-
     }
+
+    @RequestMapping(value="/login/{nic}", method = RequestMethod.GET)
+    public CommonResponseDto login(@PathVariable String nic){
+        CommonResponseDto commonResponseDto;
+        try {
+            return employeeService.login(nic);
+        } catch (SQLException e) {
+            commonResponseDto = new CommonResponseDto();
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+            return commonResponseDto;
+        }
+    }
+
 }
