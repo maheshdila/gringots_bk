@@ -171,7 +171,32 @@ public class AccountDaoImpl implements AccountDao{
     }
 
     @Override
-    public CommonResponseDto getFD(long accnum) throws SQLException {
+    public CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        CallableStatement stmt = connection.prepareCall("{CALL cashWithdrawal(?,?,?) }");
+        stmt.setLong(1,account_id);
+        stmt.setDouble(2,withdrawal_amount);
+        stmt.registerOutParameter(3,Types.INTEGER);
+        stmt.execute();
+
+        if (stmt.getInt(3)==0){
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Withdrawal is successfull");
+            commonResponseDto.setQuerySuccesful(true);
+            //commonResponseDto.setResponseObject();
+
+        }
+        else{
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Withdrawal failed");
+            commonResponseDto.setQuerySuccesful(false);
+
+        }
+        return commonResponseDto;
+      
+  @Override 
+  public CommonResponseDto getFD(long accnum) throws SQLException {
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         FixedDepositResponseDto fixedDepositResponseDto = new FixedDepositResponseDto();
         Connection connection = dataSource.getConnection();
@@ -220,7 +245,4 @@ public class AccountDaoImpl implements AccountDao{
             co.setQuerySuccesful(false);
         }
         return co;
-    }
-
-
-}
+      
