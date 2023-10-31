@@ -80,4 +80,9 @@ public class AccountServiceImpl implements AccountService{
             return commonResponseDto;
         }
     }
+
+    @Override
+    public CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException {
+        return accountDao.cashWithdrawal(account_id, withdrawal_amount );
+    }
 }
