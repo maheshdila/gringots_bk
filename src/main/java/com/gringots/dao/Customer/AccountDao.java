@@ -18,5 +18,7 @@ public interface AccountDao {
     CommonResponseDto createFD(long savingAcc, double amount, String accountType) throws SQLException;
 
     CommonResponseDto getFD(long accnum) throws SQLException;
+    CommonResponseDto findCustomer(long accnum) throws SQLException;
+
 
 }

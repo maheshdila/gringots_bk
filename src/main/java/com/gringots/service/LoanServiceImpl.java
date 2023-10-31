@@ -33,8 +33,13 @@ public class LoanServiceImpl implements com.gringots.service.LoanService{
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         try{
         if(loanRequestDto.getLoanType().equalsIgnoreCase("online")){
+
             FixedDepositResponseDto fixedDepositResponseDto = (FixedDepositResponseDto) accountDao.getFD(loanRequestDto.getFixedDepositId()).getResponseObject();//type casting
-            if(fixedDepositResponseDto.getAmount()*0.6>= loanRequestDto.getAmount() && loanRequestDto.getAmount()<=500000.00){
+            if(fixedDepositResponseDto.getAmount()*0.6>= loanRequestDto.getAmount()
+                    && loanRequestDto.getAmount()<=500000.00
+            &&  (long) accountDao.findCustomer(fixedDepositResponseDto.getSavingsAccountId()).getResponseObject() ==
+                    loanRequestDto.getCustomerId()){
+
                 loanRequestDto.setLoanStatus("approved");
                 Date utilDate = new Date();
                 // Convert java.util.Date to java.sql.Date
@@ -46,7 +51,7 @@ public class LoanServiceImpl implements com.gringots.service.LoanService{
             }
             else{
                 commonResponseDto.setResponseCode("400");
-                commonResponseDto.setResponseMessage("Loan request creation failed, Invalid loan amount");
+                commonResponseDto.setResponseMessage("Loan request creation failed, Invalid loan amount or invalid fd account");
                 commonResponseDto.setQuerySuccesful(false);
                 loanRequestDto.setLoanStatus("rejected");
                 //commonResponseDto = loanDao.createLoan(loanRequestDto);

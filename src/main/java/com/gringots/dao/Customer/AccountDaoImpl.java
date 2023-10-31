@@ -200,5 +200,27 @@ public class AccountDaoImpl implements AccountDao{
         return commonResponseDto;
     }
 
+    @Override
+    public CommonResponseDto findCustomer(long accnum) throws SQLException {
+        CommonResponseDto co = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT customer_id FROM account WHERE account_no = ?");
+        statement.setLong(1,accnum);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            co.setResponseCode("200");
+            co.setResponseMessage("Customer found");
+            co.setQuerySuccesful(true);
+            co.setResponseObject((Long) resultSet.getLong("customer_id"));
+        }
+        else{
+            co.setResponseCode("404");
+            co.setResponseMessage("Customer not found");
+            co.setQuerySuccesful(false);
+        }
+        return co;
+    }
+
 
 }
