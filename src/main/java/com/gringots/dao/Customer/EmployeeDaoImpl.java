@@ -56,7 +56,8 @@ public class EmployeeDaoImpl implements EmployeeDao{
     }
 
     @Override
-    public EmployeeResponseDto getEmployeeDetailsBynic(String nic) throws SQLException {
+    public CommonResponseDto getEmployeeDetailsBynic(String nic) throws SQLException {
+        CommonResponseDto commonResponseDto  =new CommonResponseDto();
         EmployeeResponseDto employeeResponseDto = new EmployeeResponseDto();
 
         Connection connection = dataSource.getConnection();
@@ -73,8 +74,19 @@ public class EmployeeDaoImpl implements EmployeeDao{
             employeeResponseDto.setDate_of_birth(resultSet.getDate("date_of_birth"));
             employeeResponseDto.setAddress(resultSet.getString("address"));
             employeeResponseDto.setEmployee_type(resultSet.getString("employee_type"));
+
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Employee found");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseObject(employeeResponseDto);
         }
-        return employeeResponseDto;
+        else{
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("Employee not found");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+
+        return commonResponseDto;
 
     }
 
