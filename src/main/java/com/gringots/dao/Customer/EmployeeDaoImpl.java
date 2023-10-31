@@ -2,6 +2,7 @@ package com.gringots.dao.Customer;
 
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.EmployeeRequestDto;
+import com.gringots.model.response.EmployeeResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -53,6 +54,34 @@ public class EmployeeDaoImpl implements EmployeeDao{
 
         return commonResponseDto;
     }
+
+    @Override
+    public EmployeeResponseDto getEmployeeDetailsBynic(String nic) throws SQLException {
+        EmployeeResponseDto employeeResponseDto = new EmployeeResponseDto();
+
+        Connection connection = dataSource.getConnection();
+        String sql = "SELECT * FROM employee WHERE NIC=?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1,nic);
+        ResultSet resultSet = stmt.executeQuery();
+        if(resultSet.next()){
+            employeeResponseDto.setEmployee_id(resultSet.getString("emplooyee_id"));
+            employeeResponseDto.setBranch_id(resultSet.getString("branch_id"));
+            employeeResponseDto.setFirst_name(resultSet.getString("first_name"));
+            employeeResponseDto.setLast_name(resultSet.getString("last_name"));
+            employeeResponseDto.setNic(resultSet.getString("nic"));
+            employeeResponseDto.setDate_of_birth(resultSet.getDate("date_of_birth"));
+            employeeResponseDto.setAddress(resultSet.getString("address"));
+            employeeResponseDto.setEmployee_type(resultSet.getString("employee_type"));
+        }
+        return employeeResponseDto;
+
+    }
+
+
+
+
+
 }
 
 
