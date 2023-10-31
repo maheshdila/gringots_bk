@@ -1,0 +1,70 @@
+/*----------------------event for resetting num_of_withdrawals-------------------------------*/
+
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT gringots_bk.reset_monthly_withdrawals
+ON SCHEDULE EVERY 1 MONTH
+STARTS CURRENT_TIMESTAMP
+DO
+  UPDATE gringots_bk.Saving_account
+  SET num_of_withdrawals = 0;
+
+
+/*----------------------event for calculating profit-------------------------------*/
+DELIMITER //
+
+CREATE EVENT CalculateAnnualInterest
+ON SCHEDULE EVERY 1 MONTH
+STARTS '2023-01-01 00:00:00'  -- Replace 'yyyy' with the desired year
+DO
+BEGIN
+    -- The rest of the event code remains the same
+    DECLARE done INT DEFAULT 0;
+    DECLARE saving_account_number BIGINT;
+    DECLARE s_account_type ENUM('children', 'teen', 'adult', 'senior');
+    DECLARE interest_rate NUMERIC(4, 2);
+    DECLARE current_balance NUMERIC(20, 2);
+    DECLARE calculated_interest NUMERIC(20, 2);
+
+    -- Declare a cursor to iterate over saving accounts
+    DECLARE cur CURSOR FOR
+        SELECT sa.saving_acc_no, sa.s_account_type
+        FROM Saving_account sa
+        INNER JOIN Account a ON sa.saving_acc_no = a.account_no;
+
+    -- Handle exceptions
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    -- Loop through saving accounts
+    read_loop: LOOP
+        FETCH cur INTO saving_account_number, s_account_type;
+
+        IF done = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Retrieve interest rate
+        SELECT rate INTO interest_rate
+        FROM Saving_account_Interest_rate
+        WHERE account_type = s_account_type;
+
+        -- Retrieve current balance
+        SELECT balance INTO current_balance
+        FROM Account
+        WHERE account_no = saving_account_number;
+
+        -- Calculate interest for a year
+        SET calculated_interest = (current_balance * interest_rate) / 100;
+
+        -- Add the calculated interest to the current balance
+        UPDATE Account
+        SET balance = balance + calculated_interest
+        WHERE account_no = saving_account_number;
+    END LOOP;
+
+    CLOSE cur;
+END;
+//
+
+DELIMITER ;

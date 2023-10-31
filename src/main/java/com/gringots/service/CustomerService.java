@@ -11,7 +11,7 @@ import java.text.ParseException;
 public interface CustomerService {
     boolean registerCustomer(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException;
 
-    CustomerRequestDto getCustomerDetailsById(String id);
+    CustomerRequestDto isCustomerExists(String id);
 
     CommonResponseDto createAccount(AccountRequestDto accountRequestDto) throws SQLException;
 

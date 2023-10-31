@@ -3,7 +3,6 @@ package com.gringots.controller;
 import com.gringots.model.request.AccountRequestDto;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
-import com.gringots.model.response.CustomerAccountResponseDto;
 import com.gringots.service.AccountService;
 import com.gringots.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class AccountController {
     public CommonResponseDto getCustomerDetails(@PathVariable("email") String email){
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         if(email != null){
-            CustomerRequestDto customerRequestDto = customerService.getCustomerDetailsById(email);
+            CustomerRequestDto customerRequestDto = customerService.isCustomerExists(email);
             commonResponseDto.setResponseCode("200");
             commonResponseDto.setResponseObject(customerRequestDto);
         }

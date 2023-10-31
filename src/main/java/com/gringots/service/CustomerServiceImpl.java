@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public CustomerRequestDto getCustomerDetailsById(String email) {
+    public CustomerRequestDto isCustomerExists(String email) {
         customerDao.customerAlreadyExist(email);
         return null;
     }

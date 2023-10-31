@@ -3,6 +3,7 @@ package com.gringots.dao.Customer;
 import com.gringots.model.request.AccountRequestDto;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.response.CustomerAccountResponseDto;
+import com.gringots.model.response.FixedDepositResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -167,6 +168,58 @@ public class AccountDaoImpl implements AccountDao{
             commonResponseDto.setResponseMessage("FD creation failed");
         }
         return commonResponseDto;
+    }
+
+    @Override
+    public CommonResponseDto getFD(long accnum) throws SQLException {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        FixedDepositResponseDto fixedDepositResponseDto = new FixedDepositResponseDto();
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM fixed_deposit WHERE deposit_id = ?");
+        statement.setLong(1,accnum);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            fixedDepositResponseDto.setDepositId(resultSet.getLong("deposit_id"));
+            fixedDepositResponseDto.setSavingsAccountId(resultSet.getLong("saving_acc_no"));
+            fixedDepositResponseDto.setAmount(resultSet.getDouble("amount"));
+            fixedDepositResponseDto.setAccountType(resultSet.getString("account_type"));
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("FD found");
+            commonResponseDto.setResponseObject(fixedDepositResponseDto);
+
+        }
+        else{
+            commonResponseDto.setQuerySuccesful(false);
+            commonResponseDto.setResponseMessage("FD not found");
+            commonResponseDto.setResponseCode("404");
+
+        }
+        System.out.println(fixedDepositResponseDto.toString());
+        return commonResponseDto;
+    }
+
+    @Override
+    public CommonResponseDto findCustomer(long accnum) throws SQLException {
+        CommonResponseDto co = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT customer_id FROM account WHERE account_no = ?");
+        statement.setLong(1,accnum);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            co.setResponseCode("200");
+            co.setResponseMessage("Customer found");
+            co.setQuerySuccesful(true);
+            co.setResponseObject((Long) resultSet.getLong("customer_id"));
+        }
+        else{
+            co.setResponseCode("404");
+            co.setResponseMessage("Customer not found");
+            co.setQuerySuccesful(false);
+        }
+        return co;
     }
 
 
