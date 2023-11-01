@@ -17,7 +17,7 @@ public interface CustomerDao {
 
     CommonResponseDto createIndividual(String firstName, String lastName, String nic, String dob,int recordId) throws SQLException;
 
-    void createUsingProcedures(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException;
+    CommonResponseDto createUsingProcedures(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException;
     void setAutoCommit(boolean b) throws SQLException;
     void commit() throws SQLException;
     void rollback() throws SQLException;

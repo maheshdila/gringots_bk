@@ -102,7 +102,7 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     @Override
-    public void createUsingProcedures(CustomerRequestDto customerRequestDto) throws SQLException, ParseException {
+    public CommonResponseDto createUsingProcedures(CustomerRequestDto customerRequestDto) throws SQLException, ParseException {
         Connection connection = dataSource.getConnection();
         CallableStatement stmt = connection.prepareCall("{CALL insert_customer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 
@@ -115,21 +115,37 @@ public class CustomerDaoImpl implements CustomerDao {
         stmt.setString(7, customerRequestDto.getNic());
 
         SimpleDateFormat sdf1 = new SimpleDateFormat("dd-mm-yyyy");
+        if(customerRequestDto.getDob()!=null){
         java.util.Date date = sdf1.parse(customerRequestDto.getDob());
         java.sql.Date sqlDob = new java.sql.Date(date.getTime());
-        stmt.setDate(8, sqlDob);
+        stmt.setDate(8, sqlDob);}
+        else{
+            stmt.setDate(8, null);
+        }
 
         stmt.setString(9, customerRequestDto.getPassword());
         stmt.setString(10, customerRequestDto.getContactPersonName());
         stmt.setString(11, customerRequestDto.getOrganizationRegNo());
-        //stmt.registerOutParameter(13, Types.BIGINT);
+        stmt.registerOutParameter(12, Types.INTEGER);
+        stmt.executeUpdate();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
 
-        if(stmt.executeUpdate() > 0){
+        if(stmt.getInt(12) == 0){
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("customer created");
 
-        };
+
+        }
+        else{
+            commonResponseDto.setQuerySuccesful(false);
+            commonResponseDto.setResponseCode("400");
+            commonResponseDto.setResponseMessage("customer not created");
+        } ;
 
         // Close resources (Connection, CallableStatement, etc.) in a finally block.
         // This code should be within a try-catch-finally block for proper exception handling and resource management.
+        return commonResponseDto;
     }
 
 

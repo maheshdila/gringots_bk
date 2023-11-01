@@ -17,4 +17,6 @@ public interface CustomerService {
 
     CommonResponseDto login(String email) throws SQLException;
     CommonResponseDto getcustomerAccountbyEmail(String email) throws SQLException;
+
+    CommonResponseDto createCustomer(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException;
 }
