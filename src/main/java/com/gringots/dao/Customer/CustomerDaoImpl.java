@@ -115,9 +115,13 @@ public class CustomerDaoImpl implements CustomerDao {
         stmt.setString(7, customerRequestDto.getNic());
 
         SimpleDateFormat sdf1 = new SimpleDateFormat("dd-mm-yyyy");
+        if(customerRequestDto.getDob()!=null){
         java.util.Date date = sdf1.parse(customerRequestDto.getDob());
         java.sql.Date sqlDob = new java.sql.Date(date.getTime());
-        stmt.setDate(8, sqlDob);
+        stmt.setDate(8, sqlDob);}
+        else{
+            stmt.setDate(8, null);
+        }
 
         stmt.setString(9, customerRequestDto.getPassword());
         stmt.setString(10, customerRequestDto.getContactPersonName());

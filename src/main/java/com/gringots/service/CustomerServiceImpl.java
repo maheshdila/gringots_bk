@@ -4,6 +4,9 @@ import com.gringots.dao.Customer.*;
 import com.gringots.model.request.AccountRequestDto;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.request.CustomerRequestDto;
+import com.gringots.model.response.CustomerAccountResponseDto;
+import com.gringots.model.response.IndividualResponseDto;
+import com.gringots.model.response.OrganizationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,20 +61,39 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public CommonResponseDto getcustomerAccountbyEmail(String email) throws SQLException {
         //CustomerService customerService = new CustomerServiceImpl();
+        //AccountService accountService = new AccountServiceImpl();
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         commonResponseDto = customerDao.getAccountCustomerbyEmail(email);   ;
         CommonResponseDto responseDto = new CommonResponseDto();
         //commonResponseDto = customerDao.customerAlreadyExist(email);
         //long customerId = (long) commonResponseDto.getResponseObject();
         if (commonResponseDto.isQuerySuccesful()){
-            responseDto =  accountDao.getAccount((long) commonResponseDto.getResponseObject());
-            if(responseDto.isQuerySuccesful()){
-                return responseDto;
+            commonResponseDto =  accountDao.getAccount((long) commonResponseDto.getResponseObject());
+            //CommonResponseDto commonResponseDto= accountDao.getAccount(accnum);
+            CustomerAccountResponseDto customerAccountResponseDto = (CustomerAccountResponseDto) commonResponseDto.getResponseObject();
+
+            if (customerAccountResponseDto.getCustomerType().equalsIgnoreCase("individual")){
+                IndividualResponseDto individualResponseDto =  customerDao.getIndividualByid(customerAccountResponseDto.getCustomerId());
+                customerAccountResponseDto.setFirstName(individualResponseDto.getFirstName());
+                customerAccountResponseDto.setLastName(individualResponseDto.getLastName());
+                customerAccountResponseDto.setNic(individualResponseDto.getNic());
+                customerAccountResponseDto.setDob(individualResponseDto.getDob());
+                commonResponseDto.setResponseObject(customerAccountResponseDto);
+
+            }
+            else if(customerAccountResponseDto.getCustomerType().equalsIgnoreCase("organization")){
+                OrganizationResponseDto organizationResponseDto = customerDao.getOrganizationByid(customerAccountResponseDto.getCustomerId());
+                customerAccountResponseDto.setOrgName(organizationResponseDto.getOrgName());
+                customerAccountResponseDto.setOrgRegNumber(organizationResponseDto.getOrgRegnum());
+                commonResponseDto.setResponseObject(customerAccountResponseDto);
+                //return commonResponseDto;
+            }
+            if(commonResponseDto.isQuerySuccesful()){
+                return commonResponseDto;
             }
             else{
-                responseDto.setResponseCode("500");
-                responseDto.setResponseMessage("Account not found");
-                return responseDto;
+                commonResponseDto.setResponseCode("500");
+                commonResponseDto.setResponseMessage("Account not found");
             }
         }
 
