@@ -108,7 +108,19 @@ public class AccountController {
         try {
             commonResponseDto = accountService.cashWithdrawal(account_id,withdrawal_amount);
         } catch (SQLException e){
-            System.out.println("um ghere");
+            //System.out.println("um ghere");
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
+    @RequestMapping(value = "/getAllTransactions/", params = {"branchId","pageNumber"}, method = RequestMethod.GET)
+    public CommonResponseDto getAllTransactions(@RequestParam long branchId, @RequestParam long pageNumber) {
+        //System.out.println("controller");
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try {
+            commonResponseDto = accountService.getAllTransactions(branchId,pageNumber);
+        } catch (SQLException e) {
             commonResponseDto.setResponseCode(e.getErrorCode()+"");
             commonResponseDto.setResponseMessage(e.getMessage());
         }

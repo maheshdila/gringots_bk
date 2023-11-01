@@ -29,12 +29,14 @@ public class CustomerDaoImpl implements CustomerDao {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 commonResponseDto.setQuerySuccesful(true);
+                commonResponseDto.setResponseObject(resultSet.getInt("customer_id"));
             }else {
                 commonResponseDto.setQuerySuccesful(false);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return commonResponseDto;
     }
 
@@ -218,6 +220,28 @@ public class CustomerDaoImpl implements CustomerDao {
         }
 
         return organizationResponseDto;
+    }
+
+    @Override
+    public CommonResponseDto getAccountCustomerbyEmail(String email) throws SQLException {
+        Connection connection =dataSource.getConnection();
+        String sql = "SELECT account_no FROM getdatabyemail WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1,email);
+        ResultSet resultSet = statement.executeQuery();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        if(resultSet.next()){
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("account found");
+            commonResponseDto.setResponseObject(resultSet.getLong("account_no"));
+        }
+        else{
+            commonResponseDto.setQuerySuccesful(false);
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("account not found");
+        }
+        return commonResponseDto;
     }
 
 

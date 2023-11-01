@@ -53,7 +53,7 @@ public class LoanServiceImpl implements com.gringots.service.LoanService{
                 commonResponseDto.setResponseCode("400");
                 commonResponseDto.setResponseMessage("Loan request creation failed, Invalid loan amount or invalid fd account");
                 commonResponseDto.setQuerySuccesful(false);
-                loanRequestDto.setLoanStatus("rejected");
+                //loanRequestDto.setLoanStatus("rejected");
                 //commonResponseDto = loanDao.createLoan(loanRequestDto);
 
             }

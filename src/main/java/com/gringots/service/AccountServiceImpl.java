@@ -38,7 +38,6 @@ public class AccountServiceImpl implements AccountService{
             customerAccountResponseDto.setLastName(individualResponseDto.getLastName());
             customerAccountResponseDto.setNic(individualResponseDto.getNic());
             customerAccountResponseDto.setDob(individualResponseDto.getDob());
-
             commonResponseDto.setResponseObject(customerAccountResponseDto);
 
         }
@@ -46,7 +45,6 @@ public class AccountServiceImpl implements AccountService{
             OrganizationResponseDto organizationResponseDto = customerDao.getOrganizationByid(customerAccountResponseDto.getCustomerId());
             customerAccountResponseDto.setOrgName(organizationResponseDto.getOrgName());
             customerAccountResponseDto.setOrgRegNumber(organizationResponseDto.getOrgRegnum());
-
             commonResponseDto.setResponseObject(customerAccountResponseDto);
             //return commonResponseDto;
         }
@@ -105,4 +103,13 @@ public class AccountServiceImpl implements AccountService{
         }
         return commonResponseDto;
     }
+    @Override
+    public CommonResponseDto getAllTransactions(long branchId,long pageNumber) throws SQLException{
+        return accountDao.getAllTransactions(branchId,pageNumber);
+    }
+    //public CommonResponseDto getCustomerAccount(String email) throws SQLException{
+
+        //getAccountbyNum();
+        //return accountDao.getCustomerAccount(customerId);
+
 }

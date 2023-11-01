@@ -18,4 +18,5 @@ public interface AccountService {
     CommonResponseDto createFd(long savingAcc, double amount, String accountType) throws SQLException;
 
     CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException;
+    CommonResponseDto getAllTransactions(long branchId,long pageNumber) throws SQLException;
 }

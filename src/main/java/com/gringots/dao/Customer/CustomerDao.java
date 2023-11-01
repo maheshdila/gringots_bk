@@ -29,4 +29,6 @@ public interface CustomerDao {
     IndividualResponseDto getIndividualByid(long customerId) throws SQLException;
     OrganizationResponseDto getOrganizationByid(long customerId) throws SQLException;
 
+    CommonResponseDto getAccountCustomerbyEmail(String email) throws SQLException;
+
 }

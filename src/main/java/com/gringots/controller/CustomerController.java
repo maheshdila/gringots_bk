@@ -46,4 +46,17 @@ public class CustomerController {
             return commonResponseDto;
         }
     }
+
+    @RequestMapping(value="/getcustomer/{email}", method = RequestMethod.GET)
+    public CommonResponseDto getcustomer(@PathVariable String email){
+        CommonResponseDto commonResponseDto;
+        try {
+            return customerService.getcustomerAccountbyEmail(email);
+        } catch (SQLException e) {
+            commonResponseDto = new CommonResponseDto();
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+            return commonResponseDto;
+        }
+    }
 }
