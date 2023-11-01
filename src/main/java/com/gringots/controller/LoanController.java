@@ -19,7 +19,7 @@ public class LoanController {
     LoanService loanService;
     @RequestMapping(value = "/create" ,method = RequestMethod.POST)
     public CommonResponseDto createLoan(@RequestBody LoanRequestDto loanRequestDto){
-
+        //System.out.println('h');
         try {
             return loanService.createLoan(loanRequestDto);
         } catch (SQLException e) {

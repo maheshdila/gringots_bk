@@ -309,8 +309,8 @@ public class AccountDaoImpl implements AccountDao {
         //"SELECT * FROM total_transactions WHERE Timestamp BETWEEN '2023-10-20 00:00:00' AND '2023-11-01 23:59:59' ORDER BY Timestamp DESC LIMIT ? OFFSET ?"
         //connection.prepareStatement(sql);
         PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setLong(2, 25);
-        statement.setLong(3, (pageNumber-1)*25);
+        statement.setLong(2, 15);
+        statement.setLong(3, (pageNumber-1)*15);
         statement.setInt(1, (int) branchId);
         ResultSet resultSet = statement.executeQuery();
         TransactionResponseDto[] transactionResponseDtos = new TransactionResponseDto[25];
