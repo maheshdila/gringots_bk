@@ -116,7 +116,7 @@ public class AccountController {
     }
     @RequestMapping(value = "/getAllTransactions/", params = {"branchId","pageNumber"}, method = RequestMethod.GET)
     public CommonResponseDto getAllTransactions(@RequestParam long branchId, @RequestParam long pageNumber) {
-        System.out.println("controller");
+        //System.out.println("controller");
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         try {
             commonResponseDto = accountService.getAllTransactions(branchId,pageNumber);
