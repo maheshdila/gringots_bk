@@ -83,6 +83,26 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException {
-        return accountDao.cashWithdrawal(account_id, withdrawal_amount );
+        Long withdrawals = (Long) accountDao.getWithdrawals(account_id).getResponseObject();
+        CommonResponseDto commonResponseDto;
+        //return accountDao.cashWithdrawal(account_id, withdrawal_amount );
+        if (withdrawals<=5){
+            Double balance = (Double) accountDao.getBalance(account_id).getResponseObject();
+            if(balance>=withdrawal_amount) {
+                commonResponseDto = accountDao.cashWithdrawal(account_id, withdrawal_amount);
+            }
+            else{
+                commonResponseDto = new CommonResponseDto();
+                commonResponseDto.setResponseCode("500");
+                commonResponseDto.setResponseMessage("Insufficient balance");
+            }
+        }
+        else{
+            commonResponseDto = new CommonResponseDto();
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Withdrawals limit exceeded");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+        return commonResponseDto;
     }
 }

@@ -169,18 +169,21 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public CommonResponseDto cashWithdrawal(long account_id, double withdrawal_amount) throws SQLException {
+        System.out.println(account_id+ " " + withdrawal_amount);
         CommonResponseDto commonResponseDto = new CommonResponseDto();
         Connection connection = dataSource.getConnection();
-        CallableStatement stmt = connection.prepareCall("{CALL cashWithdrawal(?,?,?) }");
+        CallableStatement stmt = connection.prepareCall("{CALL cash_withdraw(?,?,?) }");
         stmt.setLong(1, account_id);
         stmt.setDouble(2, withdrawal_amount);
         stmt.registerOutParameter(3, Types.INTEGER);
         stmt.execute();
 
+
         if (stmt.getInt(3) == 0) {
             commonResponseDto.setResponseCode("200");
             commonResponseDto.setResponseMessage("Withdrawal is successfull");
             commonResponseDto.setQuerySuccesful(true);
+
             //commonResponseDto.setResponseObject();
 
         } else {
@@ -242,5 +245,45 @@ public class AccountDaoImpl implements AccountDao {
         return co;
 
     }
+    public CommonResponseDto getWithdrawals(Long accNum) throws SQLException {
+        Connection connection= dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT num_of_withdrawals FROM saving_account WHERE saving_acc_no = ?");
+        statement.setLong(1, accNum);
+        ResultSet resultSet = statement.executeQuery();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        if (resultSet.next()) {
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Withdrawal found");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseObject((Long) resultSet.getLong("num_of_withdrawals"));
+        } else {
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("Withdrawal not found");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+        return commonResponseDto;
+
+    }
+    public CommonResponseDto getBalance(long accNum) throws SQLException {
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT balance FROM account WHERE account_no = ?");
+        statement.setLong(1, accNum);
+        ResultSet resultSet = statement.executeQuery();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        if (resultSet.next()) {
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Balance found");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseObject((Double) resultSet.getDouble("balance"));
+        } else {
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("Balance not found");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+        return commonResponseDto;
+    }
+
 
 }
