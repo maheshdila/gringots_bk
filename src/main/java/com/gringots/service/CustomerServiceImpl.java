@@ -22,6 +22,7 @@ public class CustomerServiceImpl implements CustomerService{
      AccountDao accountDao;
 
 
+
     @Override
     public boolean registerCustomer(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException {
 
@@ -54,4 +55,28 @@ public class CustomerServiceImpl implements CustomerService{
     public CommonResponseDto login(String email) throws SQLException {
         return customerDao.login(email);
     }
+    @Override
+    public CommonResponseDto getcustomerAccountbyEmail(String email) throws SQLException {
+        //CustomerService customerService = new CustomerServiceImpl();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        commonResponseDto = customerDao.getAccountCustomerbyEmail(email);   ;
+        CommonResponseDto responseDto = new CommonResponseDto();
+        //commonResponseDto = customerDao.customerAlreadyExist(email);
+        //long customerId = (long) commonResponseDto.getResponseObject();
+        if (commonResponseDto.isQuerySuccesful()){
+            responseDto =  accountDao.getAccount((long) commonResponseDto.getResponseObject());
+            if(responseDto.isQuerySuccesful()){
+                return responseDto;
+            }
+            else{
+                responseDto.setResponseCode("500");
+                responseDto.setResponseMessage("Account not found");
+                return responseDto;
+            }
+        }
+
+        return commonResponseDto;
+        //return customerDao.getbyEmail(email);
+    }
+
 }

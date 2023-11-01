@@ -108,7 +108,7 @@ public class AccountController {
         try {
             commonResponseDto = accountService.cashWithdrawal(account_id,withdrawal_amount);
         } catch (SQLException e){
-            System.out.println("um ghere");
+            //System.out.println("um ghere");
             commonResponseDto.setResponseCode(e.getErrorCode()+"");
             commonResponseDto.setResponseMessage(e.getMessage());
         }

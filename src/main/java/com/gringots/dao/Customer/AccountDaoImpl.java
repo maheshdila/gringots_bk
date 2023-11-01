@@ -54,7 +54,7 @@ public class AccountDaoImpl implements AccountDao {
             String sql = "SELECT account_no, ac.customer_id, branch_id, account_type, balance, cs.email, cs.address, cs.customer_type, cs.phone_number " +
                     "FROM account AS ac " +
                     "INNER JOIN customer AS cs ON ac.customer_id = cs.customer_id " +
-                    "WHERE ac.account_no = ?";
+                    "WHERE ac.account_no = ? ";
             stmt = connection.prepareStatement(sql);
             stmt.setLong(1, accnum);
 
@@ -343,6 +343,7 @@ public class AccountDaoImpl implements AccountDao {
         connection.close();
         return commonResponseDto;
     }
+
 
 
 }
