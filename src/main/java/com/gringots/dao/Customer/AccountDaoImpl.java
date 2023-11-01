@@ -4,11 +4,13 @@ import com.gringots.model.request.AccountRequestDto;
 import com.gringots.model.request.CommonResponseDto;
 import com.gringots.model.response.CustomerAccountResponseDto;
 import com.gringots.model.response.FixedDepositResponseDto;
+import com.gringots.model.response.TransactionResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.Optional;
 
 @Repository
 public class AccountDaoImpl implements AccountDao {
@@ -119,7 +121,8 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setResponseMessage("Deposit failed");
             commonResponseDto.setQuerySuccesful(false);
         }
-
+        //resultSet.close();
+        connection.close();
         return commonResponseDto;
     }
 
@@ -142,6 +145,8 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setResponseMessage("Transfer failed");
             commonResponseDto.setQuerySuccesful(false);
         }
+        //resultSet.close();
+        connection.close();
         return commonResponseDto;
     }
 
@@ -164,6 +169,8 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setQuerySuccesful(false);
             commonResponseDto.setResponseMessage("FD creation failed");
         }
+        //resultSet.close();
+        connection.close();
         return commonResponseDto;
     }
 
@@ -192,6 +199,8 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setQuerySuccesful(false);
 
         }
+        //resultSet.close();
+        connection.close();
         return commonResponseDto;
     }
 
@@ -220,7 +229,9 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setResponseCode("404");
 
         }
-        System.out.println(fixedDepositResponseDto.toString());
+        //System.out.println(fixedDepositResponseDto.toString());
+        resultSet.close();
+        connection.close();
         return commonResponseDto;
     }
 
@@ -242,6 +253,8 @@ public class AccountDaoImpl implements AccountDao {
             co.setResponseMessage("Customer not found");
             co.setQuerySuccesful(false);
         }
+        resultSet.close();
+        connection.close();
         return co;
 
     }
@@ -262,6 +275,9 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setResponseMessage("Withdrawal not found");
             commonResponseDto.setQuerySuccesful(false);
         }
+
+        resultSet.close();
+        connection.close();
         return commonResponseDto;
 
     }
@@ -282,6 +298,49 @@ public class AccountDaoImpl implements AccountDao {
             commonResponseDto.setResponseMessage("Balance not found");
             commonResponseDto.setQuerySuccesful(false);
         }
+        resultSet.close();
+        connection.close();
+        return commonResponseDto;
+    }
+    public CommonResponseDto getAllTransactions(long branchId,long pageNumber) throws SQLException{
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        Connection connection = dataSource.getConnection();
+        String sql = "SELECT * FROM total_transactions Where branch_id = ? ORDER BY Timestamp DESC LIMIT ? OFFSET ? ";
+        //"SELECT * FROM total_transactions WHERE Timestamp BETWEEN '2023-10-20 00:00:00' AND '2023-11-01 23:59:59' ORDER BY Timestamp DESC LIMIT ? OFFSET ?"
+        //connection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setLong(2, 25);
+        statement.setLong(3, (pageNumber-1)*25);
+        statement.setInt(1, (int) branchId);
+        ResultSet resultSet = statement.executeQuery();
+        TransactionResponseDto[] transactionResponseDtos = new TransactionResponseDto[25];
+
+
+        while(resultSet.next()) {
+            //resultSet.previous();
+            TransactionResponseDto transactionResponseDto = new TransactionResponseDto();
+            transactionResponseDto.setAccNum(resultSet.getLong("account_id"));
+            transactionResponseDto.setAmount(resultSet.getDouble("amount"));
+            transactionResponseDto.setTransactionType(resultSet.getString("transaction_type"));
+            transactionResponseDto.setTimestamp(resultSet.getTimestamp("timestamp"));
+            if (transactionResponseDto.getTimestamp() != null) {
+                transactionResponseDtos[resultSet.getRow() - 1] = transactionResponseDto;
+            }
+        }
+        if(transactionResponseDtos.length!=0) {
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Transactions found");
+            commonResponseDto.setQuerySuccesful(true);
+            commonResponseDto.setResponseObject(transactionResponseDtos);
+        }
+        else{
+            commonResponseDto.setResponseCode("404");
+            commonResponseDto.setResponseMessage("Transactions not found");
+            commonResponseDto.setQuerySuccesful(false);
+        }
+        resultSet.close();
+        statement.close();
+        connection.close();
         return commonResponseDto;
     }
 

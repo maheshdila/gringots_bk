@@ -105,4 +105,8 @@ public class AccountServiceImpl implements AccountService{
         }
         return commonResponseDto;
     }
+    @Override
+    public CommonResponseDto getAllTransactions(long branchId,long pageNumber) throws SQLException{
+        return accountDao.getAllTransactions(branchId,pageNumber);
+    }
 }

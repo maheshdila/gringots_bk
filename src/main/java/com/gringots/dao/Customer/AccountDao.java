@@ -26,4 +26,6 @@ public interface AccountDao {
     public CommonResponseDto getWithdrawals(Long accNum) throws SQLException;
     CommonResponseDto getBalance(long accNum) throws SQLException;
 
+    public CommonResponseDto getAllTransactions(long branchId,long pageNumber) throws SQLException;
+
 }

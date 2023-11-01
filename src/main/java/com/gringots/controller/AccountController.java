@@ -114,5 +114,17 @@ public class AccountController {
         }
         return commonResponseDto;
     }
+    @RequestMapping(value = "/getAllTransactions/", params = {"branchId","pageNumber"}, method = RequestMethod.GET)
+    public CommonResponseDto getAllTransactions(@RequestParam long branchId, @RequestParam long pageNumber) {
+        System.out.println("controller");
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try {
+            commonResponseDto = accountService.getAllTransactions(branchId,pageNumber);
+        } catch (SQLException e) {
+            commonResponseDto.setResponseCode(e.getErrorCode()+"");
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
+        return commonResponseDto;
+    }
 
 }
