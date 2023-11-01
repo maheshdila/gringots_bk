@@ -20,17 +20,20 @@ public class CustomerController {
     CustomerDao customerDao;
 
     @RequestMapping(value = "/register" , method = RequestMethod.POST)
-    public String register(@RequestBody
-                                 CustomerRequestDto customerRequestDto) throws Exception {
+    public CommonResponseDto register(@RequestBody
+                                 CustomerRequestDto customerRequestDto)  {
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        try {
+            commonResponseDto = customerService.createCustomer(customerRequestDto);
+        }
+        catch (Exception e) {
+            //commonResponseDto.setResponseCode(e.gete);
+            commonResponseDto.setResponseMessage(e.getMessage());
+        }
 
-        customerDao.createUsingProcedures();
-           boolean customerCreated =  customerService.registerCustomer(customerRequestDto);
-
-           if(customerCreated){
-               return "Customer Created Successful";
-           }else {
-               return "Customer creation Unsuccessful";
-           }
+        //customerDao.createUsingProcedures();
+           //boolean customerCreated =  customerService.registerCustomer(customerRequestDto);
+    return commonResponseDto;
     //return "Customer Created Successful";
     }
    // @GetMapping(params = {"email"})

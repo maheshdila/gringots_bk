@@ -78,5 +78,22 @@ public class CustomerServiceImpl implements CustomerService{
         return commonResponseDto;
         //return customerDao.getbyEmail(email);
     }
+    @Override
+    public CommonResponseDto createCustomer(CustomerRequestDto customerRequestDto) throws SQLException, UnsupportedEncodingException, ParseException {
+        //CustomerDao customerDao = (CustomerDao) new CustomerDaoImpl();
+        CommonResponseDto commonResponseDto = new CommonResponseDto();
+        commonResponseDto = customerDao.customerAlreadyExist(customerRequestDto.getEmail());
+        if (commonResponseDto.isQuerySuccesful()){
+            commonResponseDto.setResponseCode("500");
+            commonResponseDto.setResponseMessage("Customer already exists");
+            return commonResponseDto;
+        }
+        else{
+            commonResponseDto = customerDao.createUsingProcedures(customerRequestDto);
+            commonResponseDto.setResponseCode("200");
+            commonResponseDto.setResponseMessage("Customer created successfully");
+            return commonResponseDto;
+        }
+    }
 
 }
