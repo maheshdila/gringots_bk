@@ -42,14 +42,4 @@ To run the application, use the following command:
 java -jar target/gringots_bk.jar
 ```
 
-### Scheduled Transaction Queries
-The application includes functionality for scheduling transaction queries. This allows for automated execution of specific banking operations at defined intervals. Configuration for scheduled tasks can be found in the `application.properties` file.
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-For any inquiries, please contact [your-email@example.com].
