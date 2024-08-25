@@ -8,6 +8,7 @@ Gringots is a backend application designed for a banking system. It focuses on s
 - **MySQL Database:** Utilizes MySQL for reliable data storage and management.
 - **Prepared Statements:** Enhances security by using prepared statements to prevent SQL injection attacks.
 - **Stored Procedures:** Employs stored procedures for efficient data processing and complex queries.
+- **Scheduled Transaction Queries:** Supports scheduled execution of transaction queries to automate and streamline banking operations.
 
 ## Technology Stack
 - **Programming Language:** Java
@@ -40,6 +41,9 @@ To run the application, use the following command:
 ```bash
 java -jar target/gringots_bk.jar
 ```
+
+### Scheduled Transaction Queries
+The application includes functionality for scheduling transaction queries. This allows for automated execution of specific banking operations at defined intervals. Configuration for scheduled tasks can be found in the `application.properties` file.
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
